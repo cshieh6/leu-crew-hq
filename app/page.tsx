@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import TaskCard from "@/components/TaskCard";
 import ShoppingCard from "@/components/ShoppingCard";
 import DashboardCard from "@/components/DashboardCard";
+import SnapshotCard from "@/components/SnapshotCard";
 
 export default function Home() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -73,36 +74,33 @@ export default function Home() {
   }
 
   async function deleteTask(id: number) {
-    const { error } = await supabase
+    await supabase
       .from("tasks")
       .delete()
       .eq("id", id);
-
-    console.log("DELETE TASK ERROR:", error);
 
     fetchData();
   }
 
   async function deleteItem(id: number) {
-    const { error } = await supabase
+    await supabase
       .from("shopping")
       .delete()
       .eq("id", id);
 
-    console.log("DELETE SHOPPING ERROR:", error);
-
     fetchData();
   }
 
-  async function toggleTask(id: number, completed: boolean) {
-    const { error } = await supabase
+  async function toggleTask(
+    id: number,
+    completed: boolean
+  ) {
+    await supabase
       .from("tasks")
       .update({
         completed: !completed,
       })
       .eq("id", id);
-
-    console.log("TOGGLE TASK ERROR:", error);
 
     fetchData();
   }
@@ -111,22 +109,28 @@ export default function Home() {
     id: number,
     completed: boolean
   ) {
-    const { error } = await supabase
+    await supabase
       .from("shopping")
       .update({
         completed: !completed,
       })
       .eq("id", id);
 
-    console.log("TOGGLE SHOPPING ERROR:", error);
-
     fetchData();
   }
+
+  const remainingTasks = tasks.filter(
+    (task) => !task.completed
+  ).length;
+
+  const remainingShopping = shopping.filter(
+    (item) => !item.completed
+  ).length;
 
   return (
     <main
       style={{
-        padding: 32,
+        padding: 20,
         maxWidth: 1200,
         margin: "0 auto",
         fontFamily: "system-ui",
@@ -134,34 +138,32 @@ export default function Home() {
     >
       <Header />
 
-      {/* Family Overview */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr",
-          gap: 24,
-          marginBottom: 24,
-        }}
+      <SnapshotCard
+        remainingTasks={remainingTasks}
+        remainingShopping={remainingShopping}
+      />
+
+      <DashboardCard
+        title="Family Today"
+        icon="👨‍👩‍👦"
       >
-        <DashboardCard
-          title="Family Today"
-          icon="👨‍👩‍👦"
-        >
-          <p>Arthur 🎒</p>
-          <p>Andrew 🧸</p>
-          <p>Kobe 🐶</p>
-        </DashboardCard>
-      </div>
+        <p>Arthur 🎒</p>
+        <p>Andrew 🧸</p>
+        <p>Kobe 🐶</p>
+      </DashboardCard>
 
 
-      {/* Main Tools */}
       <div
+        className="dashboard-grid"
         style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          gridTemplateColumns:
+            "repeat(2, minmax(0, 1fr))",
           gap: 24,
+          marginTop: 24,
         }}
       >
+
         <TaskCard
           tasks={tasks}
           newTask={newTask}
@@ -170,6 +172,7 @@ export default function Home() {
           deleteTask={deleteTask}
           toggleTask={toggleTask}
         />
+
 
         <ShoppingCard
           shopping={shopping}
