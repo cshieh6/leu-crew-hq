@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import Header from "@/components/Header";
 import TaskCard from "@/components/TaskCard";
 import ShoppingCard from "@/components/ShoppingCard";
+import DashboardCard from "@/components/DashboardCard";
 
 export default function Home() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -28,7 +29,6 @@ export default function Home() {
       .select("*")
       .order("created_at", { ascending: true });
 
-    console.log("TASK DATA:", JSON.stringify(tasksData, null, 2));
     console.log("FETCH TASKS ERROR:", taskError);
     console.log("FETCH SHOPPING ERROR:", shoppingError);
 
@@ -59,7 +59,10 @@ export default function Home() {
 
     const { error } = await supabase
       .from("shopping")
-      .insert({ text: newItem });
+      .insert({
+        text: newItem,
+        completed: false,
+      });
 
     console.log("ADD SHOPPING ERROR:", error);
 
@@ -104,11 +107,27 @@ export default function Home() {
     fetchData();
   }
 
+  async function toggleShoppingItem(
+    id: number,
+    completed: boolean
+  ) {
+    const { error } = await supabase
+      .from("shopping")
+      .update({
+        completed: !completed,
+      })
+      .eq("id", id);
+
+    console.log("TOGGLE SHOPPING ERROR:", error);
+
+    fetchData();
+  }
+
   return (
     <main
       style={{
         padding: 32,
-        maxWidth: 1000,
+        maxWidth: 1200,
         margin: "0 auto",
         fontFamily: "system-ui",
       }}
@@ -118,9 +137,26 @@ export default function Home() {
       <div
         style={{
           display: "grid",
+          gridTemplateColumns: "1fr",
+          gap: 24,
+          marginBottom: 24,
+        }}
+      >
+        <DashboardCard
+          title="Family Today"
+          icon="👨‍👩‍👦"
+        >
+          <p>Arthur 🎒</p>
+          <p>Andrew 🧸</p>
+          <p>Kobe 🐶</p>
+        </DashboardCard>
+      </div>
+
+      <div
+        style={{
+          display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: 24,
-          marginTop: 32,
         }}
       >
         <TaskCard
@@ -138,7 +174,36 @@ export default function Home() {
           setNewItem={setNewItem}
           addItem={addItem}
           deleteItem={deleteItem}
+          toggleShoppingItem={toggleShoppingItem}
         />
+
+        <DashboardCard
+          title="Calendar"
+          icon="📅"
+        >
+          <p>No upcoming events yet.</p>
+        </DashboardCard>
+
+        <DashboardCard
+          title="Meals"
+          icon="🍽️"
+        >
+          <p>Meal planning coming soon.</p>
+        </DashboardCard>
+
+        <DashboardCard
+          title="Pets"
+          icon="🐶"
+        >
+          <p>Kobe tracker coming soon.</p>
+        </DashboardCard>
+
+        <DashboardCard
+          title="Finances"
+          icon="💰"
+        >
+          <p>Family budget coming soon.</p>
+        </DashboardCard>
       </div>
     </main>
   );

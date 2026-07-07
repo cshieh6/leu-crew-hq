@@ -1,6 +1,7 @@
 type Item = {
   id: number;
   text: string;
+  completed: boolean;
 };
 
 type ShoppingCardProps = {
@@ -9,6 +10,10 @@ type ShoppingCardProps = {
   setNewItem: (value: string) => void;
   addItem: () => void;
   deleteItem: (id: number) => void;
+  toggleShoppingItem: (
+    id: number,
+    completed: boolean
+  ) => void;
 };
 
 export default function ShoppingCard({
@@ -17,6 +22,7 @@ export default function ShoppingCard({
   setNewItem,
   addItem,
   deleteItem,
+  toggleShoppingItem,
 }: ShoppingCardProps) {
   return (
     <section
@@ -37,11 +43,15 @@ export default function ShoppingCard({
             border: "1px solid #ccc",
           }}
           value={newItem}
-          onChange={(e) => setNewItem(e.target.value)}
+          onChange={(e) =>
+            setNewItem(e.target.value)
+          }
           placeholder="Add item"
         />
 
-        <button onClick={addItem}>Add</button>
+        <button onClick={addItem}>
+          Add
+        </button>
       </div>
 
       <ul style={{ padding: 0, marginTop: 20 }}>
@@ -52,16 +62,49 @@ export default function ShoppingCard({
               listStyle: "none",
               display: "flex",
               justifyContent: "space-between",
+              alignItems: "center",
               padding: 10,
               marginBottom: 8,
               borderRadius: 8,
               background: "#f7f7f7",
             }}
           >
-            <span>{item.text}</span>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={item.completed ?? false}
+                onChange={() =>
+                  toggleShoppingItem(
+                    item.id,
+                    item.completed ?? false
+                  )
+                }
+              />
+
+              <span
+                style={{
+                  textDecoration: item.completed
+                    ? "line-through"
+                    : "none",
+                  opacity: item.completed
+                    ? 0.5
+                    : 1,
+                }}
+              >
+                {item.text}
+              </span>
+            </div>
 
             <button
-              onClick={() => deleteItem(item.id)}
+              onClick={() =>
+                deleteItem(item.id)
+              }
               style={{
                 border: "none",
                 background: "transparent",
