@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import Header from "@/components/Header";
 
 export default function Home() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -24,10 +25,7 @@ export default function Home() {
       .select("*")
       .order("created_at", { ascending: true });
 
-    console.log("FETCH TASKS:", tasksData);
     console.log("FETCH TASKS ERROR:", taskError);
-
-    console.log("FETCH SHOPPING:", shoppingData);
     console.log("FETCH SHOPPING ERROR:", shoppingError);
 
     setTasks(tasksData || []);
@@ -37,12 +35,11 @@ export default function Home() {
   async function addTask() {
     if (!newTask.trim()) return;
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("tasks")
-      .insert({ text: newTask })
-      .select();
+      .insert({ text: newTask });
 
-    console.log("ADD TASK:", { data, error });
+    console.log("ADD TASK ERROR:", error);
 
     if (!error) {
       setNewTask("");
@@ -53,12 +50,11 @@ export default function Home() {
   async function addItem() {
     if (!newItem.trim()) return;
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("shopping")
-      .insert({ text: newItem })
-      .select();
+      .insert({ text: newItem });
 
-    console.log("ADD ITEM:", { data, error });
+    console.log("ADD ITEM ERROR:", error);
 
     if (!error) {
       setNewItem("");
@@ -67,29 +63,23 @@ export default function Home() {
   }
 
   async function deleteTask(id: number) {
-    console.log("Deleting task id:", id);
-
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("tasks")
       .delete()
-      .eq("id", id)
-      .select();
+      .eq("id", id);
 
-    console.log("DELETE TASK RESULT:", { data, error });
+    console.log("DELETE TASK ERROR:", error);
 
     fetchData();
   }
 
   async function deleteItem(id: number) {
-    console.log("Deleting shopping item id:", id);
-
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("shopping")
       .delete()
-      .eq("id", id)
-      .select();
+      .eq("id", id);
 
-    console.log("DELETE SHOPPING RESULT:", { data, error });
+    console.log("DELETE ITEM ERROR:", error);
 
     fetchData();
   }
@@ -97,61 +87,73 @@ export default function Home() {
   return (
     <main
       style={{
-        padding: 30,
-        maxWidth: 900,
+        padding: 32,
+        maxWidth: 1000,
         margin: "0 auto",
         fontFamily: "system-ui",
       }}
     >
-      <h1>🏡 Leu Crew HQ</h1>
+      <Header />
 
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          gap: 30,
-          marginTop: 20,
+          gap: 24,
+          marginTop: 32,
         }}
       >
         {/* TASKS */}
-        <section>
+        <section
+          style={{
+            border: "1px solid #ddd",
+            borderRadius: 16,
+            padding: 20,
+          }}
+        >
           <h2>✅ Tasks</h2>
 
           <div style={{ display: "flex", gap: 8 }}>
             <input
-              style={{ flex: 1, padding: 8 }}
+              style={{
+                flex: 1,
+                padding: 10,
+                borderRadius: 8,
+                border: "1px solid #ccc",
+              }}
               value={newTask}
               onChange={(e) => setNewTask(e.target.value)}
               placeholder="Add task"
             />
-            <button onClick={addTask}>Add</button>
+
+            <button onClick={addTask}>
+              Add
+            </button>
           </div>
 
-          <ul style={{ padding: 0, marginTop: 16 }}>
-            {tasks.map((t) => (
+          <ul style={{ padding: 0, marginTop: 20 }}>
+            {tasks.map((task) => (
               <li
-                key={t.id}
+                key={task.id}
                 style={{
                   listStyle: "none",
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  padding: "8px 12px",
-                  border: "1px solid #ddd",
-                  borderRadius: 8,
+                  padding: 10,
                   marginBottom: 8,
+                  borderRadius: 8,
+                  background: "#f7f7f7",
                 }}
               >
-                <span>{t.text}</span>
+                <span>{task.text}</span>
 
                 <button
-                  onClick={() => deleteTask(t.id)}
+                  onClick={() => deleteTask(task.id)}
                   style={{
+                    cursor: "pointer",
                     border: "none",
                     background: "transparent",
-                    color: "#d00",
-                    cursor: "pointer",
-                    fontSize: 18,
                   }}
                 >
                   ✕
@@ -162,44 +164,56 @@ export default function Home() {
         </section>
 
         {/* SHOPPING */}
-        <section>
+        <section
+          style={{
+            border: "1px solid #ddd",
+            borderRadius: 16,
+            padding: 20,
+          }}
+        >
           <h2>🛒 Shopping</h2>
 
           <div style={{ display: "flex", gap: 8 }}>
             <input
-              style={{ flex: 1, padding: 8 }}
+              style={{
+                flex: 1,
+                padding: 10,
+                borderRadius: 8,
+                border: "1px solid #ccc",
+              }}
               value={newItem}
               onChange={(e) => setNewItem(e.target.value)}
               placeholder="Add item"
             />
-            <button onClick={addItem}>Add</button>
+
+            <button onClick={addItem}>
+              Add
+            </button>
           </div>
 
-          <ul style={{ padding: 0, marginTop: 16 }}>
-            {shopping.map((s) => (
+          <ul style={{ padding: 0, marginTop: 20 }}>
+            {shopping.map((item) => (
               <li
-                key={s.id}
+                key={item.id}
                 style={{
                   listStyle: "none",
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  padding: "8px 12px",
-                  border: "1px solid #ddd",
-                  borderRadius: 8,
+                  padding: 10,
                   marginBottom: 8,
+                  borderRadius: 8,
+                  background: "#f7f7f7",
                 }}
               >
-                <span>{s.text}</span>
+                <span>{item.text}</span>
 
                 <button
-                  onClick={() => deleteItem(s.id)}
+                  onClick={() => deleteItem(item.id)}
                   style={{
+                    cursor: "pointer",
                     border: "none",
                     background: "transparent",
-                    color: "#d00",
-                    cursor: "pointer",
-                    fontSize: 18,
                   }}
                 >
                   ✕
