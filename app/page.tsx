@@ -28,6 +28,7 @@ export default function Home() {
       .select("*")
       .order("created_at", { ascending: true });
 
+    console.log("TASK DATA:", JSON.stringify(tasksData, null, 2));
     console.log("FETCH TASKS ERROR:", taskError);
     console.log("FETCH SHOPPING ERROR:", shoppingError);
 
@@ -40,7 +41,10 @@ export default function Home() {
 
     const { error } = await supabase
       .from("tasks")
-      .insert({ text: newTask });
+      .insert({
+        text: newTask,
+        completed: false,
+      });
 
     console.log("ADD TASK ERROR:", error);
 
@@ -87,6 +91,19 @@ export default function Home() {
     fetchData();
   }
 
+  async function toggleTask(id: number, completed: boolean) {
+    const { error } = await supabase
+      .from("tasks")
+      .update({
+        completed: !completed,
+      })
+      .eq("id", id);
+
+    console.log("TOGGLE TASK ERROR:", error);
+
+    fetchData();
+  }
+
   return (
     <main
       style={{
@@ -112,6 +129,7 @@ export default function Home() {
           setNewTask={setNewTask}
           addTask={addTask}
           deleteTask={deleteTask}
+          toggleTask={toggleTask}
         />
 
         <ShoppingCard

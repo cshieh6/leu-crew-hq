@@ -1,6 +1,7 @@
 type Task = {
   id: number;
   text: string;
+  completed: boolean;
 };
 
 type TaskCardProps = {
@@ -9,6 +10,7 @@ type TaskCardProps = {
   setNewTask: (value: string) => void;
   addTask: () => void;
   deleteTask: (id: number) => void;
+  toggleTask: (id: number, completed: boolean) => void;
 };
 
 export default function TaskCard({
@@ -17,6 +19,7 @@ export default function TaskCard({
   setNewTask,
   addTask,
   deleteTask,
+  toggleTask,
 }: TaskCardProps) {
   return (
     <section
@@ -52,13 +55,33 @@ export default function TaskCard({
               listStyle: "none",
               display: "flex",
               justifyContent: "space-between",
+              alignItems: "center",
               padding: 10,
               marginBottom: 8,
               borderRadius: 8,
               background: "#f7f7f7",
             }}
           >
-            <span>{task.text}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <input
+                type="checkbox"
+                checked={task.completed}
+                onChange={() =>
+                  toggleTask(task.id, task.completed)
+                }
+              />
+
+              <span
+                style={{
+                  textDecoration: task.completed
+                    ? "line-through"
+                    : "none",
+                  opacity: task.completed ? 0.5 : 1,
+                }}
+              >
+                {task.text}
+              </span>
+            </div>
 
             <button
               onClick={() => deleteTask(task.id)}
