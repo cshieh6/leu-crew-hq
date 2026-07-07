@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+
 import Header from "@/components/Header";
+import TaskCard from "@/components/TaskCard";
+import ShoppingCard from "@/components/ShoppingCard";
 
 export default function Home() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -54,7 +57,7 @@ export default function Home() {
       .from("shopping")
       .insert({ text: newItem });
 
-    console.log("ADD ITEM ERROR:", error);
+    console.log("ADD SHOPPING ERROR:", error);
 
     if (!error) {
       setNewItem("");
@@ -79,7 +82,7 @@ export default function Home() {
       .delete()
       .eq("id", id);
 
-    console.log("DELETE ITEM ERROR:", error);
+    console.log("DELETE SHOPPING ERROR:", error);
 
     fetchData();
   }
@@ -103,125 +106,21 @@ export default function Home() {
           marginTop: 32,
         }}
       >
-        {/* TASKS */}
-        <section
-          style={{
-            border: "1px solid #ddd",
-            borderRadius: 16,
-            padding: 20,
-          }}
-        >
-          <h2>✅ Tasks</h2>
+        <TaskCard
+          tasks={tasks}
+          newTask={newTask}
+          setNewTask={setNewTask}
+          addTask={addTask}
+          deleteTask={deleteTask}
+        />
 
-          <div style={{ display: "flex", gap: 8 }}>
-            <input
-              style={{
-                flex: 1,
-                padding: 10,
-                borderRadius: 8,
-                border: "1px solid #ccc",
-              }}
-              value={newTask}
-              onChange={(e) => setNewTask(e.target.value)}
-              placeholder="Add task"
-            />
-
-            <button onClick={addTask}>
-              Add
-            </button>
-          </div>
-
-          <ul style={{ padding: 0, marginTop: 20 }}>
-            {tasks.map((task) => (
-              <li
-                key={task.id}
-                style={{
-                  listStyle: "none",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: 10,
-                  marginBottom: 8,
-                  borderRadius: 8,
-                  background: "#f7f7f7",
-                }}
-              >
-                <span>{task.text}</span>
-
-                <button
-                  onClick={() => deleteTask(task.id)}
-                  style={{
-                    cursor: "pointer",
-                    border: "none",
-                    background: "transparent",
-                  }}
-                >
-                  ✕
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* SHOPPING */}
-        <section
-          style={{
-            border: "1px solid #ddd",
-            borderRadius: 16,
-            padding: 20,
-          }}
-        >
-          <h2>🛒 Shopping</h2>
-
-          <div style={{ display: "flex", gap: 8 }}>
-            <input
-              style={{
-                flex: 1,
-                padding: 10,
-                borderRadius: 8,
-                border: "1px solid #ccc",
-              }}
-              value={newItem}
-              onChange={(e) => setNewItem(e.target.value)}
-              placeholder="Add item"
-            />
-
-            <button onClick={addItem}>
-              Add
-            </button>
-          </div>
-
-          <ul style={{ padding: 0, marginTop: 20 }}>
-            {shopping.map((item) => (
-              <li
-                key={item.id}
-                style={{
-                  listStyle: "none",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: 10,
-                  marginBottom: 8,
-                  borderRadius: 8,
-                  background: "#f7f7f7",
-                }}
-              >
-                <span>{item.text}</span>
-
-                <button
-                  onClick={() => deleteItem(item.id)}
-                  style={{
-                    cursor: "pointer",
-                    border: "none",
-                    background: "transparent",
-                  }}
-                >
-                  ✕
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <ShoppingCard
+          shopping={shopping}
+          newItem={newItem}
+          setNewItem={setNewItem}
+          addItem={addItem}
+          deleteItem={deleteItem}
+        />
       </div>
     </main>
   );
