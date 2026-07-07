@@ -1,12 +1,14 @@
 export default function Header() {
   const today = new Date();
 
-  const formattedDate = today.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  const formattedDate = today.toLocaleDateString(
+    "en-US",
+    {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    }
+  );
 
   return (
     <header
@@ -27,6 +29,7 @@ export default function Header() {
         style={{
           fontSize: 18,
           margin: 0,
+          opacity: 0.7,
         }}
       >
         Good evening, Christine 👋
@@ -34,20 +37,11 @@ export default function Header() {
 
       <p
         style={{
-          color: "#666",
-          marginTop: 8,
+          marginTop: 4,
+          opacity: 0.6,
         }}
       >
-        Keeping your family organized, one day at a time.
-      </p>
-
-      <p
-        style={{
-          marginTop: 12,
-          fontSize: 14,
-        }}
-      >
-        📅 {formattedDate}
+        {formattedDate}
       </p>
     </header>
   );

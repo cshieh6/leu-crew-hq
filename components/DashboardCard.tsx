@@ -2,12 +2,14 @@ type DashboardCardProps = {
   title: string;
   icon?: string;
   children: React.ReactNode;
+  count?: string;
 };
 
 export default function DashboardCard({
   title,
   icon,
   children,
+  count,
 }: DashboardCardProps) {
   return (
     <section
@@ -20,18 +22,36 @@ export default function DashboardCard({
         minHeight: 160,
       }}
     >
-      <h2
+      <div
         style={{
           display: "flex",
+          justifyContent: "space-between",
           alignItems: "center",
-          gap: 8,
-          marginTop: 0,
-          marginBottom: 16,
-          fontSize: 20,
         }}
       >
-        {icon} {title}
-      </h2>
+        <h2
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            marginTop: 0,
+            fontSize: 20,
+          }}
+        >
+          {icon} {title}
+        </h2>
+
+        {count && (
+          <span
+            style={{
+              fontSize: 14,
+              opacity: 0.6,
+            }}
+          >
+            {count}
+          </span>
+        )}
+      </div>
 
       {children}
     </section>

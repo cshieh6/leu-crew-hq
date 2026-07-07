@@ -134,6 +134,7 @@ export default function Home() {
     >
       <Header />
 
+      {/* Family Overview */}
       <div
         style={{
           display: "grid",
@@ -152,6 +153,8 @@ export default function Home() {
         </DashboardCard>
       </div>
 
+
+      {/* Main Tools */}
       <div
         style={{
           display: "grid",
@@ -177,33 +180,42 @@ export default function Home() {
           toggleShoppingItem={toggleShoppingItem}
         />
 
+
         <DashboardCard
           title="Calendar"
           icon="📅"
+          count="Coming soon"
         >
           <p>No upcoming events yet.</p>
         </DashboardCard>
 
+
         <DashboardCard
           title="Meals"
           icon="🍽️"
+          count="Coming soon"
         >
           <p>Meal planning coming soon.</p>
         </DashboardCard>
 
+
         <DashboardCard
           title="Pets"
           icon="🐶"
+          count="Kobe"
         >
           <p>Kobe tracker coming soon.</p>
         </DashboardCard>
 
+
         <DashboardCard
           title="Finances"
           icon="💰"
+          count="Coming soon"
         >
           <p>Family budget coming soon.</p>
         </DashboardCard>
+
       </div>
     </main>
   );
