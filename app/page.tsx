@@ -9,87 +9,96 @@ import ShoppingCard from "@/components/ShoppingCard";
 import DashboardCard from "@/components/DashboardCard";
 import SnapshotCard from "@/components/SnapshotCard";
 import FamilyCard from "@/components/FamilyCard";
+import BirthdayCard from "@/components/BirthdayCard";
+import CalendarCard from "@/components/CalendarCard";
+
 
 export default function Home() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [shopping, setShopping] = useState<any[]>([]);
   const [family, setFamily] = useState<any[]>([]);
+  const [events, setEvents] = useState<any[]>([]);
+
 
   const [newTask, setNewTask] = useState("");
   const [newItem, setNewItem] = useState("");
+
 
   useEffect(() => {
     fetchData();
   }, []);
 
+
   async function fetchData() {
-  const { data: tasksData, error: taskError } =
-    await supabase
-      .from("tasks")
-      .select("*")
-      .order("created_at", {
-        ascending: true,
-      });
+
+    const { data: tasksData, error: taskError } =
+      await supabase
+        .from("tasks")
+        .select("*")
+        .order("created_at", {
+          ascending: true,
+        });
 
 
-  const { data: shoppingData, error: shoppingError } =
-    await supabase
-      .from("shopping")
-      .select("*")
-      .order("created_at", {
-        ascending: true,
-      });
+    const { data: shoppingData, error: shoppingError } =
+      await supabase
+        .from("shopping")
+        .select("*")
+        .order("created_at", {
+          ascending: true,
+        });
 
 
-  const { data: familyData, error: familyError } =
-    await supabase
-      .from("family_members")
-      .select("*")
-      .order("display_order", {
-        ascending: true,
-      });
+    const { data: familyData, error: familyError } =
+      await supabase
+        .from("family_members")
+        .select("*")
+        .order("display_order", {
+          ascending: true,
+        });
 
 
-  console.log(
-    "TASK DATA:",
-    tasksData
-  );
-
-  console.log(
-    "SHOPPING DATA:",
-    shoppingData
-  );
-
-  console.log(
-    "FAMILY DATA:",
-    familyData
-  );
+    const { data: eventsData, error: eventsError } =
+      await supabase
+        .from("events")
+        .select("*")
+        .order("date", {
+          ascending: true,
+        });
 
 
-  console.log(
-    "FETCH TASKS ERROR:",
-    taskError
-  );
+    console.log(
+      "FETCH TASKS ERROR:",
+      taskError
+    );
 
-  console.log(
-    "FETCH SHOPPING ERROR:",
-    shoppingError
-  );
+    console.log(
+      "FETCH SHOPPING ERROR:",
+      shoppingError
+    );
 
-  console.log(
-    "FETCH FAMILY ERROR:",
-    familyError
-  );
+    console.log(
+      "FETCH FAMILY ERROR:",
+      familyError
+    );
+
+    console.log(
+      "FETCH EVENTS ERROR:",
+      eventsError
+    );
 
 
-  setTasks(tasksData || []);
-  setShopping(shoppingData || []);
-  setFamily(familyData || []);
-}
+    setTasks(tasksData || []);
+    setShopping(shoppingData || []);
+    setFamily(familyData || []);
+    setEvents(eventsData || []);
+  }
+
 
 
   async function addTask() {
     if (!newTask.trim()) return;
+
 
     const { error } =
       await supabase
@@ -100,12 +109,6 @@ export default function Home() {
         });
 
 
-    console.log(
-      "ADD TASK ERROR:",
-      error
-    );
-
-
     if (!error) {
       setNewTask("");
       fetchData();
@@ -113,8 +116,10 @@ export default function Home() {
   }
 
 
+
   async function addItem() {
     if (!newItem.trim()) return;
+
 
     const { error } =
       await supabase
@@ -125,12 +130,6 @@ export default function Home() {
         });
 
 
-    console.log(
-      "ADD SHOPPING ERROR:",
-      error
-    );
-
-
     if (!error) {
       setNewItem("");
       fetchData();
@@ -138,7 +137,8 @@ export default function Home() {
   }
 
 
-  async function deleteTask(id: number) {
+
+  async function deleteTask(id:number) {
     await supabase
       .from("tasks")
       .delete()
@@ -148,7 +148,8 @@ export default function Home() {
   }
 
 
-  async function deleteItem(id: number) {
+
+  async function deleteItem(id:number) {
     await supabase
       .from("shopping")
       .delete()
@@ -156,12 +157,14 @@ export default function Home() {
 
     fetchData();
   }
+
 
 
   async function toggleTask(
-    id: number,
-    completed: boolean
+    id:number,
+    completed:boolean
   ) {
+
     await supabase
       .from("tasks")
       .update({
@@ -173,10 +176,12 @@ export default function Home() {
   }
 
 
+
   async function toggleShoppingItem(
-    id: number,
-    completed: boolean
+    id:number,
+    completed:boolean
   ) {
+
     await supabase
       .from("shopping")
       .update({
@@ -186,6 +191,7 @@ export default function Home() {
 
     fetchData();
   }
+
 
 
   const remainingTasks =
@@ -200,13 +206,15 @@ export default function Home() {
     ).length;
 
 
+
   return (
+
     <main
       style={{
-        padding: 20,
-        maxWidth: 1200,
-        margin: "0 auto",
-        fontFamily: "system-ui",
+        padding:20,
+        maxWidth:1200,
+        margin:"0 auto",
+        fontFamily:"system-ui",
       }}
     >
 
@@ -221,12 +229,29 @@ export default function Home() {
 
       <div
         style={{
-          marginTop: 24,
+          display:"grid",
+          gridTemplateColumns:
+            "repeat(2, minmax(0,1fr))",
+          gap:24,
+          marginTop:24,
         }}
       >
+
         <FamilyCard
           members={family}
         />
+
+
+        <BirthdayCard
+          members={family}
+        />
+
+
+        <CalendarCard
+  events={events}
+  refreshEvents={fetchData}
+/>
+
       </div>
 
 
@@ -234,11 +259,11 @@ export default function Home() {
       <div
         className="dashboard-grid"
         style={{
-          display: "grid",
+          display:"grid",
           gridTemplateColumns:
-            "repeat(2, minmax(0, 1fr))",
-          gap: 24,
-          marginTop: 24,
+            "repeat(2, minmax(0,1fr))",
+          gap:24,
+          marginTop:24,
         }}
       >
 
@@ -264,19 +289,6 @@ export default function Home() {
         />
 
 
-
-        <DashboardCard
-          title="Calendar"
-          icon="📅"
-          count="Coming soon"
-        >
-          <p>
-            Calendar integration coming soon.
-          </p>
-        </DashboardCard>
-
-
-
         <DashboardCard
           title="Meals"
           icon="🍽️"
@@ -288,7 +300,6 @@ export default function Home() {
         </DashboardCard>
 
 
-
         <DashboardCard
           title="Pets"
           icon="🐶"
@@ -298,7 +309,6 @@ export default function Home() {
             Kobe tracker coming soon.
           </p>
         </DashboardCard>
-
 
 
         <DashboardCard
