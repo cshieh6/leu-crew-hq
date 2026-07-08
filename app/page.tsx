@@ -23,53 +23,69 @@ export default function Home() {
   }, []);
 
   async function fetchData() {
-    const { data: tasksData, error: taskError } =
-      await supabase
-        .from("tasks")
-        .select("*")
-        .order("created_at", {
-          ascending: true,
-        });
+  const { data: tasksData, error: taskError } =
+    await supabase
+      .from("tasks")
+      .select("*")
+      .order("created_at", {
+        ascending: true,
+      });
 
 
-    const { data: shoppingData, error: shoppingError } =
-      await supabase
-        .from("shopping")
-        .select("*")
-        .order("created_at", {
-          ascending: true,
-        });
+  const { data: shoppingData, error: shoppingError } =
+    await supabase
+      .from("shopping")
+      .select("*")
+      .order("created_at", {
+        ascending: true,
+      });
 
 
-    const { data: familyData, error: familyError } =
-      await supabase
-        .from("family_members")
-        .select("*")
-        .order("display_order", {
-          ascending: true,
-        });
+  const { data: familyData, error: familyError } =
+    await supabase
+      .from("family_members")
+      .select("*")
+      .order("display_order", {
+        ascending: true,
+      });
 
 
-    console.log(
-      "FETCH TASKS ERROR:",
-      taskError
-    );
+  console.log(
+    "TASK DATA:",
+    tasksData
+  );
 
-    console.log(
-      "FETCH SHOPPING ERROR:",
-      shoppingError
-    );
+  console.log(
+    "SHOPPING DATA:",
+    shoppingData
+  );
 
-    console.log(
-      "FETCH FAMILY ERROR:",
-      familyError
-    );
+  console.log(
+    "FAMILY DATA:",
+    familyData
+  );
 
 
-    setTasks(tasksData || []);
-    setShopping(shoppingData || []);
-    setFamily(familyData || []);
-  }
+  console.log(
+    "FETCH TASKS ERROR:",
+    taskError
+  );
+
+  console.log(
+    "FETCH SHOPPING ERROR:",
+    shoppingError
+  );
+
+  console.log(
+    "FETCH FAMILY ERROR:",
+    familyError
+  );
+
+
+  setTasks(tasksData || []);
+  setShopping(shoppingData || []);
+  setFamily(familyData || []);
+}
 
 
   async function addTask() {
