@@ -167,7 +167,8 @@ function Section({
         marginTop:20,
         padding:16,
         borderRadius:16,
-        background:"#f8f8f8"
+        background:"#fafafa",
+        border:"1px solid #eeeeee"
       }}
     >
 
@@ -260,8 +261,8 @@ return (
 
 <Card
 emoji="🏡"
-title="What's Coming Up"
-subtitle={getGreeting()}
+title={getGreeting()}
+subtitle="What's Coming Up for the Leu Crew"
 >
 
 
