@@ -1,5 +1,8 @@
 "use client";
 
+import Card from "@/components/Card";
+
+
 type FamilyMember = {
   id: number;
   name: string;
@@ -15,139 +18,124 @@ type FamilyCardProps = {
 };
 
 
+
 function calculateAge(
   birthday: string | null
 ) {
+
   if (!birthday) return null;
+
 
   const birthDate = new Date(birthday);
   const today = new Date();
+
 
   let age =
     today.getFullYear() -
     birthDate.getFullYear();
 
+
   const monthDifference =
     today.getMonth() -
     birthDate.getMonth();
 
+
   if (
     monthDifference < 0 ||
-    (monthDifference === 0 &&
-      today.getDate() < birthDate.getDate())
+    (
+      monthDifference === 0 &&
+      today.getDate() < birthDate.getDate()
+    )
   ) {
     age--;
   }
 
+
   return age;
+
 }
 
-
-function formatBirthday(
-  birthday: string | null
-) {
-  if (!birthday) return "";
-
-  return new Date(
-    birthday
-  ).toLocaleDateString(
-    "en-US",
-    {
-      month: "short",
-      day: "numeric",
-    }
-  );
-}
 
 
 export default function FamilyCard({
   members,
 }: FamilyCardProps) {
 
+
   return (
-    <section
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: 20,
-        padding: 24,
-        background: "#fff",
-      }}
+
+    <Card
+      emoji="👨‍👩‍👦"
+      title="Family Today"
+      subtitle="Everyone in the Leu Crew"
     >
-
-      <h2>
-        👨‍👩‍👦 Family Today
-      </h2>
-
 
       <div
         style={{
-          display: "grid",
+          display:"grid",
           gridTemplateColumns:
-            "repeat(auto-fit, minmax(180px, 1fr))",
-          gap: 16,
+            "repeat(auto-fit,minmax(180px,1fr))",
+          gap:16,
         }}
       >
 
-        {members.map((member) => {
-
-          const age = calculateAge(
-            member.birthday
-          );
+        {members.map((member)=>(
 
 
-          return (
+          <div
+            key={member.id}
+            style={{
+              padding:16,
+              borderRadius:16,
+              background:"#f8f8f8",
+            }}
+          >
+
             <div
-              key={member.id}
               style={{
-                padding: 16,
-                borderRadius: 16,
-                background: "#f8f8f8",
+                fontSize:36,
               }}
             >
-
-              <div
-                style={{
-                  fontSize: 36,
-                }}
-              >
-                {member.emoji}
-              </div>
-
-
-              <h3>
-                {member.name}
-              </h3>
-
-
-              <p>
-                {member.role}
-                {age !== null &&
-                  ` • Age ${age}`}
-              </p>
-
-
-              {member.notes && (
-                <p>
-                  {member.notes}
-                </p>
-              )}
-
-
-              {member.birthday && (
-                <p>
-                  🎂{" "}
-                  {formatBirthday(
-                    member.birthday
-                  )}
-                </p>
-              )}
-
+              {member.emoji}
             </div>
-          );
-        })}
+
+
+            <h3
+              style={{
+                marginBottom:4,
+              }}
+            >
+              {member.name}
+            </h3>
+
+
+            <p>
+              {member.role}
+
+              {calculateAge(member.birthday) !== null &&
+                ` • Age ${calculateAge(member.birthday)}`
+              }
+
+            </p>
+
+
+            {member.notes && (
+              <p>
+                {member.notes}
+              </p>
+            )}
+
+          </div>
+
+
+        ))}
+
 
       </div>
 
-    </section>
+
+    </Card>
+
   );
+
 }

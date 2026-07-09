@@ -1,5 +1,9 @@
 "use client";
 
+import type { ReactNode } from "react";
+import Card from "@/components/Card";
+
+
 type Event = {
   id: number;
   title: string;
@@ -8,6 +12,7 @@ type Event = {
   person: string | null;
 };
 
+
 type FamilyMember = {
   id: number;
   name: string;
@@ -15,11 +20,13 @@ type FamilyMember = {
   emoji: string | null;
 };
 
+
 type Task = {
   id: number;
   text: string;
   completed: boolean;
 };
+
 
 type UpcomingCardProps = {
   events: Event[];
@@ -28,53 +35,75 @@ type UpcomingCardProps = {
 };
 
 
+
 function getGreeting() {
+
   const hour = new Date().getHours();
+
 
   if (hour < 12) {
     return "☀️ Good Morning, Leu Crew!";
   }
 
+
   if (hour < 17) {
     return "🌤️ Good Afternoon, Leu Crew!";
   }
 
+
   return "🌙 Good Evening, Leu Crew!";
+
 }
 
 
-function daysUntil(date: string) {
+
+function daysUntil(date:string){
+
   const today = new Date();
   today.setHours(0,0,0,0);
+
 
   const target = new Date(date);
   target.setHours(0,0,0,0);
 
+
   return Math.ceil(
-    (target.getTime() - today.getTime()) /
-    (1000 * 60 * 60 * 24)
+    (
+      target.getTime()
+      -
+      today.getTime()
+    )
+    /
+    (1000*60*60*24)
   );
+
 }
+
 
 
 function friendlyDays(date:string){
 
   const days = daysUntil(date);
 
+
   if(days === 0){
     return "Today 🎉";
   }
+
 
   if(days === 1){
     return "Tomorrow";
   }
 
+
   return `In ${days} days`;
+
 }
 
 
+
 function nextBirthdayInfo(
-  birthday:string | null
+  birthday:string|null
 ){
 
   if(!birthday) return null;
@@ -105,6 +134,7 @@ function nextBirthdayInfo(
 
 
   return {
+
     daysUntil:
       daysUntil(
         nextBirthday.toISOString()
@@ -114,7 +144,9 @@ function nextBirthdayInfo(
       nextBirthday.getFullYear()
       -
       birth.getFullYear()
+
   };
+
 }
 
 
@@ -124,8 +156,9 @@ function Section({
   children
 }:{
   title:string;
-  children:React.ReactNode;
+  children:ReactNode;
 }){
+
 
   return (
 
@@ -150,13 +183,16 @@ function Section({
         {title}
       </h3>
 
+
       {children}
+
 
     </div>
 
   );
 
 }
+
 
 
 
@@ -167,92 +203,75 @@ export default function UpcomingCard({
 }:UpcomingCardProps){
 
 
-const upcomingEvents =
-  events
-  .filter(
-    event =>
-      daysUntil(event.date) >= 0
-  )
-  .sort(
-    (a,b)=>
-      new Date(a.date).getTime()
-      -
-      new Date(b.date).getTime()
-  );
-
-
-const nextEvent =
-  upcomingEvents[0];
-
-
-const birthdays =
-  family
-  .map(member=>({
-
-    member,
-
-    birthday:
-      nextBirthdayInfo(
-        member.birthday
+  const upcomingEvents =
+    events
+      .filter(
+        event =>
+          daysUntil(event.date) >= 0
       )
-
-  }))
-  .filter(
-    item =>
-      item.birthday !== null
-  )
-  .sort(
-    (a,b)=>
-      a.birthday!.daysUntil -
-      b.birthday!.daysUntil
-  )
-  .slice(0,3);
+      .sort(
+        (a,b)=>
+          new Date(a.date).getTime()
+          -
+          new Date(b.date).getTime()
+      );
 
 
-const remainingTasks =
-  tasks
-  .filter(
-    task =>
-      !task.completed
-  )
-  .slice(0,3);
+  const nextEvent =
+    upcomingEvents[0];
+
+
+  const birthdays =
+    family
+      .map(member=>({
+
+        member,
+
+        birthday:
+          nextBirthdayInfo(
+            member.birthday
+          )
+
+      }))
+      .filter(
+        item =>
+          item.birthday !== null
+      )
+      .sort(
+        (a,b)=>
+          a.birthday!.daysUntil -
+          b.birthday!.daysUntil
+      )
+      .slice(0,3);
+
+
+
+  const remainingTasks =
+    tasks
+      .filter(
+        task =>
+          !task.completed
+      )
+      .slice(0,3);
 
 
 
 return (
 
-<section
-style={{
-border:"1px solid #ddd",
-borderRadius:24,
-padding:28,
-background:"#fff",
-marginTop:24
-}}
+<Card
+emoji="🏡"
+title="What's Coming Up"
+subtitle={getGreeting()}
 >
 
 
-<h2
-style={{
-marginBottom:4
-}}
->
-{getGreeting()}
-</h2>
-
-
-<p
-style={{
-marginTop:0
-}}
->
-Here's what's ahead 🏡
+<p>
+Here's what's ahead for the Leu Crew.
 </p>
 
 
 
 <Section title="⭐ Next Up">
-
 
 {
 nextEvent ?
@@ -268,31 +287,24 @@ fontSize:32
 </div>
 
 
-<h3
-style={{
-marginBottom:4
-}}
->
+<h3>
 {nextEvent.title}
 </h3>
 
 
 <p>
+
 {
 nextEvent.person &&
 `👤 ${nextEvent.person} • `
 }
 
-{
-friendlyDays(
-nextEvent.date
-)
-}
+{friendlyDays(nextEvent.date)}
 
 </p>
 
-</div>
 
+</div>
 
 :
 
@@ -302,14 +314,11 @@ nextEvent.date
 
 }
 
-
 </Section>
 
 
 
-
 <Section title="📆 This Week">
-
 
 {
 upcomingEvents.length === 0 ?
@@ -317,7 +326,6 @@ upcomingEvents.length === 0 ?
 <p>
 Enjoy the quiet week ☀️
 </p>
-
 
 :
 
@@ -333,22 +341,18 @@ marginBottom:12
 >
 
 <strong>
-{event.emoji || "📅"}{" "}
-{event.title}
+{event.emoji || "📅"} {event.title}
 </strong>
 
 
 <div>
+
 {
 event.person &&
 `👤 ${event.person} • `
 }
 
-{
-friendlyDays(
-event.date
-)
-}
+{friendlyDays(event.date)}
 
 </div>
 
@@ -357,17 +361,13 @@ event.date
 
 ))
 
-
 }
-
 
 </Section>
 
 
 
-
 <Section title="🎂 Celebrations">
-
 
 {
 birthdays.length === 0 ?
@@ -375,7 +375,6 @@ birthdays.length === 0 ?
 <p>
 No birthdays coming up.
 </p>
-
 
 :
 
@@ -388,17 +387,13 @@ marginBottom:12
 }}
 >
 
-
 <strong>
-{item.member.emoji}{" "}
-{item.member.name}
+{item.member.emoji} {item.member.name}
 </strong>
 
 
 <div>
-Turns{" "}
-{item.birthday!.nextAge}
-
+Turns {item.birthday!.nextAge}
 {" • "}
 
 {
@@ -416,17 +411,13 @@ item.birthday!.daysUntil === 0
 
 ))
 
-
 }
-
 
 </Section>
 
 
 
-
 <Section title="✅ Little Things">
-
 
 {
 remainingTasks.length === 0 ?
@@ -435,29 +426,22 @@ remainingTasks.length === 0 ?
 Everything is done! 🎉
 </p>
 
-
 :
 
 remainingTasks.map(task=>(
 
-<div
-key={task.id}
->
+<div key={task.id}>
 ☐ {task.text}
 </div>
 
 ))
 
-
 }
-
 
 </Section>
 
 
-
-
-</section>
+</Card>
 
 );
 
