@@ -273,16 +273,7 @@ members={family}
 
 
 
-<div
-className="dashboard-grid"
-style={{
-display:"grid",
-gridTemplateColumns:
-"repeat(2,minmax(0,1fr))",
-gap:24,
-marginTop:24
-}}
->
+<div className="dashboard-grid">
 
 
 <TaskCard
