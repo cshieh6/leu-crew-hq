@@ -1,48 +1,50 @@
-export default function Header() {
-  const today = new Date();
+"use client";
 
-  const formattedDate = today.toLocaleDateString(
-    "en-US",
-    {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-    }
-  );
+import CalendarSync from "./CalendarSync";
+
+
+export default function Header() {
 
   return (
+
     <header
       style={{
-        marginBottom: 32,
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 24
       }}
     >
-      <h1
-        style={{
-          fontSize: 36,
-          marginBottom: 8,
-        }}
-      >
-        🏡 Leu Crew HQ
-      </h1>
 
-      <p
-        style={{
-          fontSize: 18,
-          margin: 0,
-          opacity: 0.7,
-        }}
-      >
-        Good evening, Christine 👋
-      </p>
+      <div>
 
-      <p
-        style={{
-          marginTop: 4,
-          opacity: 0.6,
-        }}
-      >
-        {formattedDate}
-      </p>
+        <h1
+          style={{
+            margin: 0,
+            fontSize: 32
+          }}
+        >
+          🏡 Leu Crew HQ
+        </h1>
+
+
+        <p
+          style={{
+            marginTop: 6,
+            color: "#666"
+          }}
+        >
+          Your family command center
+        </p>
+
+      </div>
+
+
+      <CalendarSync />
+
+
     </header>
+
   );
+
 }
