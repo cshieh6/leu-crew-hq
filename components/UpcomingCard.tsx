@@ -42,16 +42,25 @@ function getGreeting() {
 
 
   if (hour < 12) {
-    return "☀️ Good Morning, Leu Crew!";
+    return {
+      title: "☀️ Good Morning, Leu Crew!",
+      message: "Let's make today a great one."
+    };
   }
 
 
   if (hour < 17) {
-    return "🌤️ Good Afternoon, Leu Crew!";
+    return {
+      title: "🌤️ Good Afternoon, Leu Crew!",
+      message: "Here's what's left for today."
+    };
   }
 
 
-  return "🌙 Good Evening, Leu Crew!";
+  return {
+    title: "🌙 Good Evening, Leu Crew!",
+    message: "Here's what's coming up next."
+  };
 
 }
 
@@ -74,7 +83,7 @@ function daysUntil(date:string){
       today.getTime()
     )
     /
-    (1000*60*60*24)
+    (1000 * 60 * 60 * 24)
   );
 
 }
@@ -103,7 +112,7 @@ function friendlyDays(date:string){
 
 
 function nextBirthdayInfo(
-  birthday:string|null
+  birthday:string | null
 ){
 
   if(!birthday) return null;
@@ -125,7 +134,7 @@ function nextBirthdayInfo(
 
     nextBirthday =
       new Date(
-        today.getFullYear()+1,
+        today.getFullYear() + 1,
         birth.getMonth(),
         birth.getDate()
       );
@@ -134,7 +143,6 @@ function nextBirthdayInfo(
 
 
   return {
-
     daysUntil:
       daysUntil(
         nextBirthday.toISOString()
@@ -144,7 +152,6 @@ function nextBirthdayInfo(
       nextBirthday.getFullYear()
       -
       birth.getFullYear()
-
   };
 
 }
@@ -158,7 +165,6 @@ function Section({
   title:string;
   children:ReactNode;
 }){
-
 
   return (
 
@@ -202,6 +208,9 @@ export default function UpcomingCard({
   family,
   tasks
 }:UpcomingCardProps){
+
+
+  const greeting = getGreeting();
 
 
   const upcomingEvents =
@@ -261,15 +270,9 @@ return (
 
 <Card
 emoji="🏡"
-title={getGreeting()}
-subtitle="What's Coming Up for the Leu Crew"
+title={greeting.title}
+subtitle={greeting.message}
 >
-
-
-<p>
-Here's what's ahead for the Leu Crew.
-</p>
-
 
 
 <Section title="⭐ Next Up">
@@ -316,6 +319,7 @@ nextEvent.person &&
 }
 
 </Section>
+
 
 
 
@@ -368,6 +372,7 @@ event.person &&
 
 
 
+
 <Section title="🎂 Celebrations">
 
 {
@@ -395,6 +400,7 @@ marginBottom:12
 
 <div>
 Turns {item.birthday!.nextAge}
+
 {" • "}
 
 {
@@ -418,6 +424,7 @@ item.birthday!.daysUntil === 0
 
 
 
+
 <Section title="✅ Little Things">
 
 {
@@ -431,7 +438,9 @@ Everything is done! 🎉
 
 remainingTasks.map(task=>(
 
-<div key={task.id}>
+<div
+key={task.id}
+>
 ☐ {task.text}
 </div>
 
