@@ -9,11 +9,12 @@ import ShoppingCard from "@/components/ShoppingCard";
 import DashboardCard from "@/components/DashboardCard";
 import SnapshotCard from "@/components/SnapshotCard";
 import FamilyCard from "@/components/FamilyCard";
-import BirthdayCard from "@/components/BirthdayCard";
 import CalendarCard from "@/components/CalendarCard";
+import UpcomingCard from "@/components/UpcomingCard";
 
 
 export default function Home() {
+
   const [tasks, setTasks] = useState<any[]>([]);
   const [shopping, setShopping] = useState<any[]>([]);
   const [family, setFamily] = useState<any[]>([]);
@@ -29,42 +30,62 @@ export default function Home() {
   }, []);
 
 
+
   async function fetchData() {
 
-    const { data: tasksData, error: taskError } =
+    const {
+      data: tasksData,
+      error: taskError
+    } =
       await supabase
         .from("tasks")
         .select("*")
         .order("created_at", {
-          ascending: true,
+          ascending:true
         });
 
 
-    const { data: shoppingData, error: shoppingError } =
+
+    const {
+      data: shoppingData,
+      error: shoppingError
+    }
+    =
       await supabase
         .from("shopping")
         .select("*")
         .order("created_at", {
-          ascending: true,
+          ascending:true
         });
 
 
-    const { data: familyData, error: familyError } =
+
+    const {
+      data: familyData,
+      error: familyError
+    }
+    =
       await supabase
         .from("family_members")
         .select("*")
         .order("display_order", {
-          ascending: true,
+          ascending:true
         });
 
 
-    const { data: eventsData, error: eventsError } =
+
+    const {
+      data: eventsData,
+      error: eventsError
+    }
+    =
       await supabase
         .from("events")
         .select("*")
         .order("date", {
-          ascending: true,
+          ascending:true
         });
+
 
 
     console.log(
@@ -92,70 +113,75 @@ export default function Home() {
     setShopping(shoppingData || []);
     setFamily(familyData || []);
     setEvents(eventsData || []);
+
   }
 
 
 
-  async function addTask() {
-    if (!newTask.trim()) return;
+  async function addTask(){
+
+    if(!newTask.trim()) return;
 
 
-    const { error } =
-      await supabase
-        .from("tasks")
-        .insert({
-          text: newTask,
-          completed: false,
-        });
+    await supabase
+      .from("tasks")
+      .insert({
+        text:newTask,
+        completed:false
+      });
 
 
-    if (!error) {
-      setNewTask("");
-      fetchData();
-    }
+    setNewTask("");
+
+    fetchData();
+
   }
 
 
 
-  async function addItem() {
-    if (!newItem.trim()) return;
+  async function addItem(){
+
+    if(!newItem.trim()) return;
 
 
-    const { error } =
-      await supabase
-        .from("shopping")
-        .insert({
-          text: newItem,
-          completed: false,
-        });
+    await supabase
+      .from("shopping")
+      .insert({
+        text:newItem,
+        completed:false
+      });
 
 
-    if (!error) {
-      setNewItem("");
-      fetchData();
-    }
+    setNewItem("");
+
+    fetchData();
+
   }
 
 
 
-  async function deleteTask(id:number) {
+  async function deleteTask(id:number){
+
     await supabase
       .from("tasks")
       .delete()
-      .eq("id", id);
+      .eq("id",id);
 
     fetchData();
+
   }
 
 
 
-  async function deleteItem(id:number) {
+  async function deleteItem(id:number){
+
     await supabase
       .from("shopping")
       .delete()
-      .eq("id", id);
+      .eq("id",id);
 
     fetchData();
+
   }
 
 
@@ -163,16 +189,17 @@ export default function Home() {
   async function toggleTask(
     id:number,
     completed:boolean
-  ) {
+  ){
 
     await supabase
       .from("tasks")
       .update({
-        completed: !completed,
+        completed:!completed
       })
-      .eq("id", id);
+      .eq("id",id);
 
     fetchData();
+
   }
 
 
@@ -180,150 +207,160 @@ export default function Home() {
   async function toggleShoppingItem(
     id:number,
     completed:boolean
-  ) {
+  ){
 
     await supabase
       .from("shopping")
       .update({
-        completed: !completed,
+        completed:!completed
       })
-      .eq("id", id);
+      .eq("id",id);
 
     fetchData();
+
   }
 
 
 
   const remainingTasks =
     tasks.filter(
-      (task) => !task.completed
+      task => !task.completed
     ).length;
+
 
 
   const remainingShopping =
     shopping.filter(
-      (item) => !item.completed
+      item => !item.completed
     ).length;
 
 
 
-  return (
+return (
 
-    <main
-      style={{
-        padding:20,
-        maxWidth:1200,
-        margin:"0 auto",
-        fontFamily:"system-ui",
-      }}
-    >
-
-      <Header />
+<main
+style={{
+padding:20,
+maxWidth:1200,
+margin:"0 auto",
+fontFamily:"system-ui"
+}}
+>
 
 
-      <SnapshotCard
-        remainingTasks={remainingTasks}
-        remainingShopping={remainingShopping}
-      />
+<Header />
 
 
-      <div
-        style={{
-          display:"grid",
-          gridTemplateColumns:
-            "repeat(2, minmax(0,1fr))",
-          gap:24,
-          marginTop:24,
-        }}
-      >
 
-        <FamilyCard
-          members={family}
-        />
-
-
-        <BirthdayCard
-          members={family}
-        />
-
-
-        <CalendarCard
-  events={events}
-  refreshEvents={fetchData}
+<SnapshotCard
+remainingTasks={remainingTasks}
+remainingShopping={remainingShopping}
 />
 
-      </div>
+
+
+<UpcomingCard
+events={events}
+family={family}
+tasks={tasks}
+/>
 
 
 
-      <div
-        className="dashboard-grid"
-        style={{
-          display:"grid",
-          gridTemplateColumns:
-            "repeat(2, minmax(0,1fr))",
-          gap:24,
-          marginTop:24,
-        }}
-      >
-
-        <TaskCard
-          tasks={tasks}
-          newTask={newTask}
-          setNewTask={setNewTask}
-          addTask={addTask}
-          deleteTask={deleteTask}
-          toggleTask={toggleTask}
-        />
+<FamilyCard
+members={family}
+/>
 
 
-        <ShoppingCard
-          shopping={shopping}
-          newItem={newItem}
-          setNewItem={setNewItem}
-          addItem={addItem}
-          deleteItem={deleteItem}
-          toggleShoppingItem={
-            toggleShoppingItem
-          }
-        />
+
+<div
+className="dashboard-grid"
+style={{
+display:"grid",
+gridTemplateColumns:
+"repeat(2,minmax(0,1fr))",
+gap:24,
+marginTop:24
+}}
+>
 
 
-        <DashboardCard
-          title="Meals"
-          icon="🍽️"
-          count="Coming soon"
-        >
-          <p>
-            Meal planning coming soon.
-          </p>
-        </DashboardCard>
+<TaskCard
+tasks={tasks}
+newTask={newTask}
+setNewTask={setNewTask}
+addTask={addTask}
+deleteTask={deleteTask}
+toggleTask={toggleTask}
+/>
 
 
-        <DashboardCard
-          title="Pets"
-          icon="🐶"
-          count="Kobe"
-        >
-          <p>
-            Kobe tracker coming soon.
-          </p>
-        </DashboardCard>
+
+<ShoppingCard
+shopping={shopping}
+newItem={newItem}
+setNewItem={setNewItem}
+addItem={addItem}
+deleteItem={deleteItem}
+toggleShoppingItem={
+toggleShoppingItem
+}
+/>
 
 
-        <DashboardCard
-          title="Finances"
-          icon="💰"
-          count="Coming soon"
-        >
-          <p>
-            Family budget coming soon.
-          </p>
-        </DashboardCard>
+
+<CalendarCard
+events={events}
+/>
 
 
-      </div>
 
-    </main>
-  );
+<DashboardCard
+title="Meals"
+icon="🍽️"
+count="Coming soon"
+>
+
+<p>
+Meal planning coming soon.
+</p>
+
+</DashboardCard>
+
+
+
+<DashboardCard
+title="Pets"
+icon="🐶"
+count="Kobe"
+>
+
+<p>
+Kobe tracker coming soon.
+</p>
+
+</DashboardCard>
+
+
+
+<DashboardCard
+title="Finances"
+icon="💰"
+count="Coming soon"
+>
+
+<p>
+Family budget coming soon.
+</p>
+
+</DashboardCard>
+
+
+</div>
+
+
+</main>
+
+);
+
 }
