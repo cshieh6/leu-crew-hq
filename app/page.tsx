@@ -33,6 +33,7 @@ export default function Home() {
 
   async function fetchData() {
 
+
     const {
       data: tasksData,
       error: taskError
@@ -74,6 +75,12 @@ export default function Home() {
 
 
 
+    const today =
+      new Date()
+        .toISOString()
+        .split("T")[0];
+
+
     const {
       data: eventsData,
       error: eventsError
@@ -82,9 +89,11 @@ export default function Home() {
       await supabase
         .from("events")
         .select("*")
+        .gte("date", today)
         .order("date", {
           ascending:true
-        });
+        })
+        .limit(20);
 
 
 
@@ -118,6 +127,7 @@ export default function Home() {
 
 
 
+
   async function addTask(){
 
     if(!newTask.trim()) return;
@@ -136,6 +146,7 @@ export default function Home() {
     fetchData();
 
   }
+
 
 
 
@@ -160,6 +171,7 @@ export default function Home() {
 
 
 
+
   async function deleteTask(id:number){
 
     await supabase
@@ -167,9 +179,11 @@ export default function Home() {
       .delete()
       .eq("id",id);
 
+
     fetchData();
 
   }
+
 
 
 
@@ -180,9 +194,11 @@ export default function Home() {
       .delete()
       .eq("id",id);
 
+
     fetchData();
 
   }
+
 
 
 
@@ -198,9 +214,11 @@ export default function Home() {
       })
       .eq("id",id);
 
+
     fetchData();
 
   }
+
 
 
 
@@ -216,9 +234,11 @@ export default function Home() {
       })
       .eq("id",id);
 
+
     fetchData();
 
   }
+
 
 
 
@@ -233,6 +253,7 @@ export default function Home() {
     shopping.filter(
       item => !item.completed
     ).length;
+
 
 
 
@@ -255,6 +276,7 @@ fontFamily:"system-ui"
 <SnapshotCard
 remainingTasks={remainingTasks}
 remainingShopping={remainingShopping}
+events={events}
 />
 
 
