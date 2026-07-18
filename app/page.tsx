@@ -11,126 +11,193 @@ import SnapshotCard from "@/components/SnapshotCard";
 import FamilyCard from "@/components/FamilyCard";
 import CalendarCard from "@/components/CalendarCard";
 import UpcomingCard from "@/components/UpcomingCard";
+import PetCard from "@/components/PetCard";
+import KidsCard from "@/components/KidsCard";
 
 
 export default function Home() {
 
-  const [tasks, setTasks] = useState<any[]>([]);
-  const [shopping, setShopping] = useState<any[]>([]);
-  const [family, setFamily] = useState<any[]>([]);
-  const [events, setEvents] = useState<any[]>([]);
+
+  const [tasks,setTasks] =
+    useState<any[]>([]);
+
+  const [shopping,setShopping] =
+    useState<any[]>([]);
+
+  const [family,setFamily] =
+    useState<any[]>([]);
+
+  const [events,setEvents] =
+    useState<any[]>([]);
+
+  const [pets,setPets] =
+    useState<any[]>([]);
 
 
-  const [newTask, setNewTask] = useState("");
-  const [newItem, setNewItem] = useState("");
+  const [newTask,setNewTask] =
+    useState("");
+
+  const [newItem,setNewItem] =
+    useState("");
 
 
-  useEffect(() => {
+
+
+  useEffect(()=>{
+
     fetchData();
-  }, []);
+
+  },[]);
 
 
 
-  async function fetchData() {
+
+  async function fetchData(){
 
 
     const {
-      data: tasksData,
-      error: taskError
+      data:tasksData,
+      error:tasksError
     } =
       await supabase
         .from("tasks")
         .select("*")
-        .order("created_at", {
-          ascending:true
-        });
+        .order(
+          "created_at",
+          {
+            ascending:true
+          }
+        );
 
 
 
     const {
-      data: shoppingData,
-      error: shoppingError
+      data:shoppingData,
+      error:shoppingError
     }
     =
       await supabase
         .from("shopping")
         .select("*")
-        .order("created_at", {
-          ascending:true
-        });
+        .order(
+          "created_at",
+          {
+            ascending:true
+          }
+        );
 
 
 
     const {
-      data: familyData,
-      error: familyError
+      data:familyData,
+      error:familyError
     }
     =
       await supabase
         .from("family_members")
         .select("*")
-        .order("display_order", {
-          ascending:true
-        });
+        .order(
+          "display_order",
+          {
+            ascending:true
+          }
+        );
 
-
-
-    const today =
-      new Date()
-        .toISOString()
-        .split("T")[0];
 
 
     const {
-      data: eventsData,
-      error: eventsError
+      data:eventsData,
+      error:eventsError
     }
     =
       await supabase
         .from("events")
         .select("*")
-        .gte("date", today)
-        .order("date", {
-          ascending:true
-        })
-        .limit(20);
+        .order(
+          "date",
+          {
+            ascending:true
+          }
+        );
+
+
+
+    const {
+      data:petsData,
+      error:petsError
+    }
+    =
+      await supabase
+        .from("pet_care")
+        .select("*")
+        .order(
+          "id",
+          {
+            ascending:true
+          }
+        );
 
 
 
     console.log(
-      "FETCH TASKS ERROR:",
-      taskError
+      "TASK ERROR:",
+      tasksError
     );
 
     console.log(
-      "FETCH SHOPPING ERROR:",
+      "SHOPPING ERROR:",
       shoppingError
     );
 
     console.log(
-      "FETCH FAMILY ERROR:",
+      "FAMILY ERROR:",
       familyError
     );
 
     console.log(
-      "FETCH EVENTS ERROR:",
+      "EVENT ERROR:",
       eventsError
     );
 
+    console.log(
+      "PET ERROR:",
+      petsError
+    );
 
-    setTasks(tasksData || []);
-    setShopping(shoppingData || []);
-    setFamily(familyData || []);
-    setEvents(eventsData || []);
+
+
+    setTasks(
+      tasksData || []
+    );
+
+    setShopping(
+      shoppingData || []
+    );
+
+    setFamily(
+      familyData || []
+    );
+
+    setEvents(
+      eventsData || []
+    );
+
+    setPets(
+      petsData || []
+    );
 
   }
 
 
 
 
+
+
+
   async function addTask(){
 
-    if(!newTask.trim()) return;
+    if(!newTask.trim())
+      return;
 
 
     await supabase
@@ -150,9 +217,13 @@ export default function Home() {
 
 
 
+
+
+
   async function addItem(){
 
-    if(!newItem.trim()) return;
+    if(!newItem.trim())
+      return;
 
 
     await supabase
@@ -172,12 +243,20 @@ export default function Home() {
 
 
 
-  async function deleteTask(id:number){
+
+
+
+  async function deleteTask(
+    id:number
+  ){
 
     await supabase
       .from("tasks")
       .delete()
-      .eq("id",id);
+      .eq(
+        "id",
+        id
+      );
 
 
     fetchData();
@@ -187,17 +266,28 @@ export default function Home() {
 
 
 
-  async function deleteItem(id:number){
+
+
+
+  async function deleteItem(
+    id:number
+  ){
 
     await supabase
       .from("shopping")
       .delete()
-      .eq("id",id);
+      .eq(
+        "id",
+        id
+      );
 
 
     fetchData();
 
   }
+
+
+
 
 
 
@@ -210,14 +300,21 @@ export default function Home() {
     await supabase
       .from("tasks")
       .update({
-        completed:!completed
+        completed:
+          !completed
       })
-      .eq("id",id);
+      .eq(
+        "id",
+        id
+      );
 
 
     fetchData();
 
   }
+
+
+
 
 
 
@@ -230,9 +327,13 @@ export default function Home() {
     await supabase
       .from("shopping")
       .update({
-        completed:!completed
+        completed:
+          !completed
       })
-      .eq("id",id);
+      .eq(
+        "id",
+        id
+      );
 
 
     fetchData();
@@ -242,17 +343,25 @@ export default function Home() {
 
 
 
+
+
+
   const remainingTasks =
     tasks.filter(
-      task => !task.completed
+      task =>
+        !task.completed
     ).length;
 
 
 
   const remainingShopping =
     shopping.filter(
-      item => !item.completed
+      item =>
+        !item.completed
     ).length;
+
+
+
 
 
 
@@ -273,58 +382,144 @@ fontFamily:"system-ui"
 
 
 
+
+
 <SnapshotCard
-remainingTasks={remainingTasks}
-remainingShopping={remainingShopping}
-events={events}
+remainingTasks={
+  remainingTasks
+}
+remainingShopping={
+  remainingShopping
+}
+events={
+  events
+}
+pets={
+  pets
+}
 />
+
+
 
 
 
 <UpcomingCard
-events={events}
-family={family}
-tasks={tasks}
+events={
+  events
+}
+family={
+  family
+}
+tasks={
+  tasks
+}
 />
+
+
 
 
 
 <FamilyCard
-members={family}
+members={
+  family
+}
 />
+
+
 
 
 
 <div className="dashboard-grid">
 
 
+
+
+
 <TaskCard
-tasks={tasks}
-newTask={newTask}
-setNewTask={setNewTask}
-addTask={addTask}
-deleteTask={deleteTask}
-toggleTask={toggleTask}
-/>
-
-
-
-<ShoppingCard
-shopping={shopping}
-newItem={newItem}
-setNewItem={setNewItem}
-addItem={addItem}
-deleteItem={deleteItem}
-toggleShoppingItem={
-toggleShoppingItem
+tasks={
+  tasks
+}
+newTask={
+  newTask
+}
+setNewTask={
+  setNewTask
+}
+addTask={
+  addTask
+}
+deleteTask={
+  deleteTask
+}
+toggleTask={
+  toggleTask
 }
 />
 
 
 
-<CalendarCard
-events={events}
+
+
+
+<ShoppingCard
+shopping={
+  shopping
+}
+newItem={
+  newItem
+}
+setNewItem={
+  setNewItem
+}
+addItem={
+  addItem
+}
+deleteItem={
+  deleteItem
+}
+toggleShoppingItem={
+  toggleShoppingItem
+}
 />
+
+
+
+
+
+
+<CalendarCard
+events={
+  events
+}
+/>
+
+
+
+
+
+
+<PetCard
+pets={
+  pets
+}
+refreshPets={
+  fetchData
+}
+/>
+
+
+
+
+
+
+<KidsCard
+events={
+  events
+}
+/>
+
+
+
 
 
 
@@ -342,17 +537,6 @@ Meal planning coming soon.
 
 
 
-<DashboardCard
-title="Pets"
-icon="🐶"
-count="Kobe"
->
-
-<p>
-Kobe tracker coming soon.
-</p>
-
-</DashboardCard>
 
 
 
@@ -369,11 +553,15 @@ Family budget coming soon.
 </DashboardCard>
 
 
+
+
+
 </div>
 
 
 </main>
 
 );
+
 
 }

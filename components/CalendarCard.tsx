@@ -1,6 +1,7 @@
 "use client";
 
 import Card from "@/components/Card";
+import { getEventInfo } from "@/lib/eventUtils";
 
 
 type Event = {
@@ -8,39 +9,20 @@ type Event = {
   title: string;
   date: string;
   start_time?: string | null;
-  category?: string | null;
   emoji?: string | null;
   notes?: string | null;
 };
 
 
 
-type CalendarCardProps = {
-  events: Event[];
-};
-
-
-
 function formatDate(date:string){
 
-  const [year, month, day] =
-    date.split("-").map(Number);
-
-
-  const localDate =
-    new Date(
-      year,
-      month - 1,
-      day
-    );
-
-
-  return localDate.toLocaleDateString(
+  return new Date(date).toLocaleDateString(
     "en-US",
     {
+      weekday:"long",
       month:"short",
       day:"numeric",
-      year:"numeric"
     }
   );
 
@@ -48,21 +30,67 @@ function formatDate(date:string){
 
 
 
-function formatTime(time:string|null|undefined){
+function formatShortDate(date:string){
 
-  if(!time) return null;
+  const today =
+    new Date();
+
+  today.setHours(0,0,0,0);
 
 
-  const [hour, minute] =
-    time.split(":").map(Number);
+  const eventDate =
+    new Date(date);
+
+  eventDate.setHours(0,0,0,0);
+
+
+  const difference =
+    Math.round(
+      (
+        eventDate.getTime()
+        -
+        today.getTime()
+      )
+      /
+      86400000
+    );
+
+
+  if(difference === 0){
+    return "⭐ Today";
+  }
+
+
+  if(difference === 1){
+    return "Tomorrow";
+  }
+
+
+  return formatDate(date);
+
+}
+
+
+
+
+function formatTime(time:string | null | undefined){
+
+  if(!time) return "";
+
+
+  const [
+    hour,
+    minute
+  ] = time.split(":");
 
 
   const date =
     new Date();
 
+
   date.setHours(
-    hour,
-    minute
+    Number(hour),
+    Number(minute)
   );
 
 
@@ -78,9 +106,97 @@ function formatTime(time:string|null|undefined){
 
 
 
+
 export default function CalendarCard({
-  events
-}:CalendarCardProps){
+  events,
+}:{
+  events:Event[];
+}){
+
+
+  const today =
+    new Date();
+
+  today.setHours(
+    0,0,0,0
+  );
+
+
+  const sevenDays =
+    new Date();
+
+  sevenDays.setDate(
+    sevenDays.getDate() + 7
+  );
+
+
+  const upcomingEvents =
+    events
+      .filter(event=>{
+
+        const eventDate =
+          new Date(event.date);
+
+        eventDate.setHours(
+          0,0,0,0
+        );
+
+
+        return (
+          eventDate >= today &&
+          eventDate <= sevenDays
+        );
+
+      })
+      .sort(
+        (a,b)=>
+          new Date(a.date).getTime()
+          -
+          new Date(b.date).getTime()
+      );
+
+
+
+  const displayedEvents =
+    upcomingEvents.slice(
+      0,
+      5
+    );
+
+
+  const remaining =
+    upcomingEvents.length -
+    displayedEvents.length;
+
+
+
+  const groupedEvents =
+    displayedEvents.reduce(
+      (
+        groups,
+        event
+      )=>{
+
+
+        if(!groups[event.date]){
+          groups[event.date] = [];
+        }
+
+
+        groups[event.date].push(
+          event
+        );
+
+
+        return groups;
+
+
+      },
+      {} as Record<string,Event[]>
+    );
+
+
+
 
 
 return (
@@ -88,82 +204,112 @@ return (
 <Card
 emoji="📅"
 title="Calendar"
-subtitle="Upcoming family events"
+subtitle="Next 7 days"
 >
 
 
 {
-events.length === 0 ?
+displayedEvents.length === 0 ?
 
 <p>
-No upcoming events.
+No events this week 🎉
 </p>
-
 
 :
 
+Object.entries(groupedEvents)
+.map(
+([date,dayEvents])=>(
+
+
 <div
+key={date}
 style={{
-display:"flex",
-flexDirection:"column",
-gap:12
+marginBottom:18
 }}
 >
 
 
-{
-events.map(event=>(
+<h3
+style={{
+fontSize:14,
+marginBottom:8
+}}
+>
+{formatShortDate(date)}
+</h3>
 
+
+
+{
+dayEvents.map(event=>{
+
+
+const info =
+getEventInfo(
+event.title
+);
+
+
+
+return (
 
 <div
 key={event.id}
 style={{
-padding:12,
-borderRadius:12,
-background:"#f8f8f8"
+padding:"10px 0",
+borderBottom:"1px solid #eee"
 }}
 >
 
 
 <strong>
-{event.emoji || "📅"} {event.title}
+
+{info.categoryEmoji}
+
+{" "}
+
+{info.cleanTitle}
+
 </strong>
 
 
 
-<p
+<div>
+{info.personEmoji}
+{" "}
+{info.person}
+</div>
+
+
+
+<div
 style={{
-margin:"6px 0 0"
+fontSize:14,
+marginTop:4
 }}
 >
 
-📅 {formatDate(event.date)}
+⏰
+
+{" "}
 
 {
-event.start_time &&
-(
-<>
-{" · "}
-⏰ {formatTime(event.start_time)}
-</>
+formatTime(
+event.start_time
 )
 }
 
-</p>
+</div>
 
 
 
-{
-event.notes &&
+</div>
 
-<p
-style={{
-marginTop:8,
-whiteSpace:"pre-wrap"
-}}
->
-{event.notes.replace(/<[^>]*>/g,"")}
-</p>
+);
+
+
+})
 
 }
 
@@ -177,7 +323,22 @@ whiteSpace:"pre-wrap"
 }
 
 
-</div>
+
+{
+remaining > 0 && (
+
+<p
+style={{
+marginTop:12,
+fontSize:14
+}}
+>
+
++ {remaining} more events this week
+
+</p>
+
+)
 
 }
 

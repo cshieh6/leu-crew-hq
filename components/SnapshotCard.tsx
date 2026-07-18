@@ -1,87 +1,139 @@
 "use client";
 
-type Event = {
-  id:number;
-  title:string;
-  date:string;
-  emoji?:string|null;
-};
-
-
 type SnapshotCardProps = {
-  remainingTasks:number;
-  remainingShopping:number;
-  events:Event[];
+  remainingTasks: number;
+  remainingShopping: number;
+  events: any[];
+  pets: any[];
 };
 
 
 
-function parseLocalDate(date:string){
+function getNextDate(
+  lastCompleted:string,
+  frequency:number
+){
 
-  const [
-    year,
-    month,
-    day
-  ] =
-    date.split("-").map(Number);
+  const date =
+    new Date(lastCompleted);
 
-
-  return new Date(
-    year,
-    month - 1,
-    day
+  date.setDate(
+    date.getDate() + frequency
   );
+
+  return date;
 
 }
 
 
 
-function isToday(date:string){
+function daysUntil(
+  date:Date
+){
 
   const today =
     new Date();
 
+  today.setHours(
+    0,
+    0,
+    0,
+    0
+  );
 
-  const eventDate =
-    parseLocalDate(date);
+
+  const target =
+    new Date(date);
+
+  target.setHours(
+    0,
+    0,
+    0,
+    0
+  );
 
 
-  return (
-    today.getFullYear()
-    ===
-    eventDate.getFullYear()
-
-    &&
-
-    today.getMonth()
-    ===
-    eventDate.getMonth()
-
-    &&
-
-    today.getDate()
-    ===
-    eventDate.getDate()
+  return Math.ceil(
+    (
+      target.getTime()
+      -
+      today.getTime()
+    )
+    /
+    86400000
   );
 
 }
 
 
 
-export default function SnapshotCard({
 
+
+export default function SnapshotCard({
   remainingTasks,
   remainingShopping,
-  events
+  events,
+  pets,
+}: SnapshotCardProps){
 
-}:SnapshotCardProps){
+
+  const todayString =
+    new Date()
+      .toISOString()
+      .split("T")[0];
 
 
-const todaysEvent =
-  events.find(
-    event =>
-      isToday(event.date)
-  );
+
+  const todaysEvents =
+    events.filter(
+      event =>
+        event.date === todayString
+    );
+
+
+
+  const kobe =
+    pets.find(
+      pet =>
+        pet.pet_name === "Kobe"
+    );
+
+
+
+  let kobeStatus =
+    "Care tracker ready";
+
+
+
+  if(kobe){
+
+    const nextDate =
+      getNextDate(
+        kobe.last_completed,
+        kobe.frequency_days
+      );
+
+
+    const days =
+      daysUntil(nextDate);
+
+
+
+    if(days < 0){
+
+      kobeStatus =
+        `🔴 Overdue by ${Math.abs(days)} days`;
+
+    }
+    else{
+
+      kobeStatus =
+        `🟢 Due in ${days} days`;
+
+    }
+
+  }
+
 
 
 
@@ -90,21 +142,16 @@ return (
 <section
 style={{
 borderRadius:20,
-padding:24,
-background:"#f8f8f8",
-border:"1px solid #ddd",
-marginBottom:24
-}}
->
-
-
-<h2
-style={{
-marginTop:0,
+padding:20,
+background:"#ffffff",
+border:"1px solid #e5e5e5",
 marginBottom:20
 }}
 >
-☀️ Today's Snapshot
+
+
+<h2>
+☀️ Today&apos;s Snapshot
 </h2>
 
 
@@ -113,41 +160,48 @@ marginBottom:20
 style={{
 display:"grid",
 gridTemplateColumns:
-"repeat(auto-fit, minmax(140px, 1fr))",
+"repeat(auto-fit,minmax(140px,1fr))",
 gap:16
 }}
 >
 
 
 <div>
-<strong>✅ Tasks</strong>
-<p style={{margin:"6px 0"}}>
+<strong>
+✅ Tasks
+</strong>
+
+<p>
 {remainingTasks} remaining
 </p>
+
 </div>
 
 
 
 <div>
-<strong>🛒 Shopping</strong>
-<p style={{margin:"6px 0"}}>
+<strong>
+🛒 Shopping
+</strong>
+
+<p>
 {remainingShopping} items
 </p>
+
 </div>
 
 
 
 <div>
-<strong>📅 Calendar</strong>
+<strong>
+📅 Calendar
+</strong>
 
-<p style={{margin:"6px 0"}}>
+<p>
 {
-todaysEvent
-?
-`${todaysEvent.emoji || "📅"} ${todaysEvent.title}`
-:
-"No events today 🎉"
+todaysEvents.length
 }
+event(s)
 </p>
 
 </div>
@@ -155,10 +209,12 @@ todaysEvent
 
 
 <div>
-<strong>🐶 Kobe</strong>
+<strong>
+🐶 Kobe
+</strong>
 
-<p style={{margin:"6px 0"}}>
-Care tracker coming soon
+<p>
+{kobeStatus}
 </p>
 
 </div>

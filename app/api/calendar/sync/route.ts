@@ -8,6 +8,34 @@ const LEU_CREW_CALENDAR_ID =
 
 
 
+function cleanGoogleDescription(
+  description?: string | null
+) {
+
+  if (!description) return null;
+
+
+  return description
+
+    // Remove HTML tags
+    .replace(/<[^>]*>/g, " ")
+
+    // Decode HTML entities
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+
+    // Remove extra whitespace
+    .replace(/\s+/g, " ")
+
+    .trim();
+
+}
+
+
+
+
 export async function GET() {
 
 
@@ -18,19 +46,26 @@ export async function GET() {
     await supabaseAdmin
       .from("google_connections")
       .select("*")
-      .order("created_at", {
-        ascending:false
-      })
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      )
       .limit(1)
       .single();
 
 
 
-  if(connectionError || !connection){
+  if (
+    connectionError ||
+    !connection
+  ) {
 
     return NextResponse.json(
       {
-        error:"No Google connection found"
+        error:
+          "No Google connection found"
       },
       {
         status:400
@@ -65,6 +100,7 @@ export async function GET() {
 
 
 
+
   const calendar =
     google.calendar({
 
@@ -73,6 +109,7 @@ export async function GET() {
       auth:oauth2Client
 
     });
+
 
 
 
@@ -103,6 +140,7 @@ export async function GET() {
 
 
 
+
   const googleEvents =
     response.data.items || [];
 
@@ -110,8 +148,10 @@ export async function GET() {
 
 
 
-  for(const event of googleEvents){
 
+  for (
+    const event of googleEvents
+  ) {
 
 
     const start =
@@ -126,13 +166,8 @@ export async function GET() {
 
 
 
-    if(!start) continue;
+    if (!start) continue;
 
-
-
-
-    const isAllDayEvent =
-      !!event.start?.date;
 
 
 
@@ -167,23 +202,9 @@ export async function GET() {
 
 
       date:
-
-        isAllDayEvent
-
-          ?
-
-          event.start?.date
-
-          :
-
-          startDate.toLocaleDateString(
-            "en-CA",
-            {
-              timeZone:
-                "America/Los_Angeles"
-            }
-          ),
-
+        startDate
+          .toISOString()
+          .split("T")[0],
 
 
 
@@ -191,49 +212,24 @@ export async function GET() {
 
         event.start?.dateTime
 
-          ?
+          ? startDate
+              .toTimeString()
+              .slice(0,5)
 
-          startDate.toLocaleTimeString(
-            "en-US",
-            {
-              hour:"2-digit",
-              minute:"2-digit",
-              hour12:false,
-              timeZone:
-                "America/Los_Angeles"
-            }
-          )
-
-          :
-
-          null,
-
-
+          : null,
 
 
 
       end_time:
 
-        endDate && event.end?.dateTime
+        endDate &&
+        event.end?.dateTime
 
-          ?
+          ? endDate
+              .toTimeString()
+              .slice(0,5)
 
-          endDate.toLocaleTimeString(
-            "en-US",
-            {
-              hour:"2-digit",
-              minute:"2-digit",
-              hour12:false,
-              timeZone:
-                "America/Los_Angeles"
-            }
-          )
-
-          :
-
-          null,
-
-
+          : null,
 
 
 
@@ -247,11 +243,25 @@ export async function GET() {
 
 
 
-
       notes:
-        event.description || null
+  (() => {
+    const cleaned =
+      cleanGoogleDescription(
+        event.description
+      );
 
+    console.log(
+      "ORIGINAL DESCRIPTION:",
+      event.description
+    );
 
+    console.log(
+      "CLEANED DESCRIPTION:",
+      cleaned
+    );
+
+    return cleaned;
+  })()
 
     };
 
@@ -261,10 +271,9 @@ export async function GET() {
 
 
     console.log(
-      "SYNCING EVENT:",
+      "INSERTING EVENT:",
       eventRecord
     );
-
 
 
 
@@ -275,7 +284,9 @@ export async function GET() {
       error
     } =
       await supabaseAdmin
+
         .from("events")
+
         .upsert(
 
           eventRecord,
@@ -286,6 +297,7 @@ export async function GET() {
           }
 
         )
+
         .select();
 
 
@@ -293,13 +305,14 @@ export async function GET() {
 
 
     console.log(
-      "SUPABASE RESULT:",
+      "SUPABASE EVENT RESULT:",
       data
     );
 
 
+
     console.log(
-      "SUPABASE ERROR:",
+      "SUPABASE EVENT ERROR:",
       error
     );
 
@@ -324,7 +337,6 @@ export async function GET() {
       )
 
   });
-
 
 
 }
