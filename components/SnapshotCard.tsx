@@ -1,35 +1,19 @@
 "use client";
 
+
 type SnapshotCardProps = {
-  remainingTasks: number;
-  remainingShopping: number;
-  events: any[];
-  pets: any[];
+  remainingTasks:number;
+  remainingShopping:number;
+  events:any[];
+  pets:any[];
+  tasks:any[];
+  shopping:any[];
+  discussions:any[];
 };
 
 
 
-function getNextDate(
-  lastCompleted:string,
-  frequency:number
-){
-
-  const date =
-    new Date(lastCompleted);
-
-  date.setDate(
-    date.getDate() + frequency
-  );
-
-  return date;
-
-}
-
-
-
-function daysUntil(
-  date:Date
-){
+function daysUntil(date:string | Date){
 
   const today =
     new Date();
@@ -67,161 +51,240 @@ function daysUntil(
 
 
 
-
-
 export default function SnapshotCard({
+
   remainingTasks,
   remainingShopping,
   events,
   pets,
-}: SnapshotCardProps){
+  tasks,
+  discussions
 
-
-  const todayString =
-    new Date()
-      .toISOString()
-      .split("T")[0];
+}:SnapshotCardProps){
 
 
 
-  const todaysEvents =
-    events.filter(
+const activeTasks =
+  tasks.filter(
+    task =>
+      !task.completed
+  );
+
+
+
+const overdueTasks =
+  activeTasks.filter(
+    task =>
+      task.due_date
+      &&
+      daysUntil(
+        task.due_date
+      ) < 0
+  );
+
+
+
+const activeDiscussions =
+  discussions.filter(
+    item =>
+      !item.completed
+  );
+
+
+
+const upcomingEvents =
+  events
+    .filter(
       event =>
-        event.date === todayString
+        daysUntil(event.date) >= 0
+    )
+    .sort(
+      (a,b)=>
+        new Date(a.date).getTime()
+        -
+        new Date(b.date).getTime()
     );
 
 
 
-  const kobe =
-    pets.find(
-      pet =>
-        pet.pet_name === "Kobe"
+const nextEvent =
+  upcomingEvents[0];
+
+
+
+const upcomingPets =
+pets
+.map(pet=>{
+
+  const nextDate =
+    new Date(
+      pet.last_completed
     );
 
+  nextDate.setDate(
+    nextDate.getDate()
+    +
+    pet.frequency_days
+  );
 
 
-  let kobeStatus =
-    "Care tracker ready";
+  return {
+    ...pet,
+    nextDate
+  };
+
+})
+.sort(
+(a,b)=>
+a.nextDate.getTime()
+-
+b.nextDate.getTime()
+);
 
 
 
-  if(kobe){
-
-    const nextDate =
-      getNextDate(
-        kobe.last_completed,
-        kobe.frequency_days
-      );
-
-
-    const days =
-      daysUntil(nextDate);
-
-
-
-    if(days < 0){
-
-      kobeStatus =
-        `🔴 Overdue by ${Math.abs(days)} days`;
-
-    }
-    else{
-
-      kobeStatus =
-        `🟢 Due in ${days} days`;
-
-    }
-
-  }
-
+const nextPet =
+  upcomingPets[0];
 
 
 
 return (
 
 <section
+
 style={{
-borderRadius:20,
+border:"1px solid #ddd",
+borderRadius:16,
 padding:20,
-background:"#ffffff",
-border:"1px solid #e5e5e5",
 marginBottom:20
 }}
+
 >
 
 
 <h2>
-☀️ Today&apos;s Snapshot
+🏠 Leu Crew HQ Snapshot
 </h2>
 
 
 
 <div
+
 style={{
 display:"grid",
 gridTemplateColumns:
-"repeat(auto-fit,minmax(140px,1fr))",
-gap:16
+"repeat(auto-fit,minmax(180px,1fr))",
+gap:12
 }}
+
 >
 
 
 <div>
-<strong>
-✅ Tasks
-</strong>
+🔴 <strong>{overdueTasks.length}</strong>
+<br/>
+Overdue Tasks
+</div>
 
-<p>
-{remainingTasks} remaining
-</p>
+
+<div>
+📋 <strong>{remainingTasks}</strong>
+<br/>
+Things To Do
+</div>
+
+
+<div>
+🛒 <strong>{remainingShopping}</strong>
+<br/>
+Shopping Items
+</div>
+
+
+<div>
+💬 <strong>{activeDiscussions.length}</strong>
+<br/>
+Discuss
+</div>
+
 
 </div>
 
 
 
-<div>
-<strong>
-🛒 Shopping
-</strong>
 
-<p>
-{remainingShopping} items
-</p>
-
-</div>
-
-
-
-<div>
-<strong>
-📅 Calendar
-</strong>
-
-<p>
 {
-todaysEvents.length
-}
-event(s)
-</p>
+nextEvent &&
+
+<div
+style={{
+marginTop:20
+}}
+>
+
+<h3>
+📅 Next Event
+</h3>
+
+<div>
+{nextEvent.emoji || "📌"} {nextEvent.title}
+</div>
+
+<div>
+In {daysUntil(nextEvent.date)} days
+</div>
 
 </div>
 
+}
+
+
+
+
+
+{
+nextPet &&
+
+<div
+
+style={{
+marginTop:20
+}}
+
+>
+
+<h3>
+🐶 Kobe
+</h3>
 
 
 <div>
-<strong>
-🐶 Kobe
-</strong>
+❤️ {nextPet.task}
+</div>
 
-<p>
-{kobeStatus}
-</p>
+
+<div>
+
+{
+daysUntil(nextPet.nextDate) < 0
+
+?
+
+`🔴 Overdue by ${Math.abs(daysUntil(nextPet.nextDate))} days`
+
+:
+
+`🟢 Due in ${daysUntil(nextPet.nextDate)} days`
+
+}
 
 </div>
 
 
-
 </div>
+
+}
+
 
 
 </section>

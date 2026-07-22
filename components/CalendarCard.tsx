@@ -5,32 +5,17 @@ import { getEventInfo } from "@/lib/eventUtils";
 
 
 type Event = {
-  id: number;
-  title: string;
-  date: string;
-  start_time?: string | null;
-  emoji?: string | null;
-  notes?: string | null;
+  id:number;
+  title:string;
+  date:string;
+  start_time?:string | null;
+  emoji?:string | null;
+  notes?:string | null;
 };
 
 
 
-function formatDate(date:string){
-
-  return new Date(date).toLocaleDateString(
-    "en-US",
-    {
-      weekday:"long",
-      month:"short",
-      day:"numeric",
-    }
-  );
-
-}
-
-
-
-function formatShortDate(date:string){
+function daysUntil(date:string){
 
   const today =
     new Date();
@@ -38,211 +23,82 @@ function formatShortDate(date:string){
   today.setHours(0,0,0,0);
 
 
-  const eventDate =
+  const target =
     new Date(date);
 
-  eventDate.setHours(0,0,0,0);
+  target.setHours(0,0,0,0);
 
 
-  const difference =
-    Math.round(
-      (
-        eventDate.getTime()
-        -
-        today.getTime()
-      )
-      /
-      86400000
-    );
-
-
-  if(difference === 0){
-    return "⭐ Today";
-  }
-
-
-  if(difference === 1){
-    return "Tomorrow";
-  }
-
-
-  return formatDate(date);
-
-}
-
-
-
-
-function formatTime(time:string | null | undefined){
-
-  if(!time) return "";
-
-
-  const [
-    hour,
-    minute
-  ] = time.split(":");
-
-
-  const date =
-    new Date();
-
-
-  date.setHours(
-    Number(hour),
-    Number(minute)
-  );
-
-
-  return date.toLocaleTimeString(
-    "en-US",
-    {
-      hour:"numeric",
-      minute:"2-digit"
-    }
+  return Math.ceil(
+    (
+      target.getTime()
+      -
+      today.getTime()
+    )
+    /
+    86400000
   );
 
 }
 
 
 
+function formatDate(date:string){
 
-export default function CalendarCard({
-  events,
+return new Date(date)
+.toLocaleDateString(
+"en-US",
+{
+ weekday:"long",
+ month:"short",
+ day:"numeric"
+}
+);
+
+}
+
+
+
+function formatTime(
+time:string | null | undefined
+){
+
+if(!time)
+return "";
+
+const [
+hour,
+minute
+]=time.split(":");
+
+
+const date =
+new Date();
+
+
+date.setHours(
+Number(hour),
+Number(minute)
+);
+
+
+return date.toLocaleTimeString(
+"en-US",
+{
+hour:"numeric",
+minute:"2-digit"
+}
+);
+
+}
+
+
+
+function EventRow({
+event
 }:{
-  events:Event[];
+event:Event
 }){
-
-
-  const today =
-    new Date();
-
-  today.setHours(
-    0,0,0,0
-  );
-
-
-  const sevenDays =
-    new Date();
-
-  sevenDays.setDate(
-    sevenDays.getDate() + 7
-  );
-
-
-  const upcomingEvents =
-    events
-      .filter(event=>{
-
-        const eventDate =
-          new Date(event.date);
-
-        eventDate.setHours(
-          0,0,0,0
-        );
-
-
-        return (
-          eventDate >= today &&
-          eventDate <= sevenDays
-        );
-
-      })
-      .sort(
-        (a,b)=>
-          new Date(a.date).getTime()
-          -
-          new Date(b.date).getTime()
-      );
-
-
-
-  const displayedEvents =
-    upcomingEvents.slice(
-      0,
-      5
-    );
-
-
-  const remaining =
-    upcomingEvents.length -
-    displayedEvents.length;
-
-
-
-  const groupedEvents =
-    displayedEvents.reduce(
-      (
-        groups,
-        event
-      )=>{
-
-
-        if(!groups[event.date]){
-          groups[event.date] = [];
-        }
-
-
-        groups[event.date].push(
-          event
-        );
-
-
-        return groups;
-
-
-      },
-      {} as Record<string,Event[]>
-    );
-
-
-
-
-
-return (
-
-<Card
-emoji="📅"
-title="Calendar"
-subtitle="Next 7 days"
->
-
-
-{
-displayedEvents.length === 0 ?
-
-<p>
-No events this week 🎉
-</p>
-
-:
-
-Object.entries(groupedEvents)
-.map(
-([date,dayEvents])=>(
-
-
-<div
-key={date}
-style={{
-marginBottom:18
-}}
->
-
-
-<h3
-style={{
-fontSize:14,
-marginBottom:8
-}}
->
-{formatShortDate(date)}
-</h3>
-
-
-
-{
-dayEvents.map(event=>{
 
 
 const info =
@@ -251,37 +107,56 @@ event.title
 );
 
 
-
 return (
 
 <div
-key={event.id}
+
 style={{
 padding:"10px 0",
 borderBottom:"1px solid #eee"
 }}
+
 >
 
 
 <strong>
 
 {info.categoryEmoji}
-
 {" "}
-
 {info.cleanTitle}
 
 </strong>
 
 
-
 <div>
+
 {info.personEmoji}
 {" "}
 {info.person}
+
 </div>
 
 
+
+{
+event.start_time &&
+
+<div
+style={{
+fontSize:14
+}}
+>
+
+⏰ {formatTime(event.start_time)}
+
+</div>
+
+}
+
+
+
+{
+event.notes &&
 
 <div
 style={{
@@ -290,55 +165,195 @@ marginTop:4
 }}
 >
 
-⏰
-
-{" "}
-
-{
-formatTime(
-event.start_time
-)
-}
+📝 {event.notes}
 
 </div>
 
+}
 
 
 </div>
 
 );
 
+}
 
-})
+
+
+
+
+export default function CalendarCard({
+
+events
+
+}:{
+events:Event[]
+}){
+
+
+const todayEvents =
+events.filter(
+event =>
+daysUntil(event.date) === 0
+);
+
+
+
+const weekEvents =
+events.filter(
+event =>
+daysUntil(event.date) > 0
+&&
+daysUntil(event.date) <= 7
+);
+
+
+
+const laterEvents =
+events.filter(
+event =>
+daysUntil(event.date) > 7
+);
+
+
+
+function sortEvents(
+items:Event[]
+){
+
+return items.sort(
+(a,b)=>
+new Date(a.date).getTime()
+-
+new Date(b.date).getTime()
+);
 
 }
 
 
 
+return (
+
+<Card
+
+emoji="📅"
+title="Calendar"
+subtitle="Family schedule"
+
+>
+
+
+{
+todayEvents.length > 0 &&
+
+<div>
+
+<h3>
+⭐ Today
+</h3>
+
+
+{
+sortEvents(todayEvents)
+.map(event=>(
+
+<EventRow
+key={event.id}
+event={event}
+/>
+
+))
+
+}
+
 </div>
 
+}
+
+
+
+
+
+{
+weekEvents.length > 0 &&
+
+<div
+style={{
+marginTop:20
+}}
+>
+
+<h3>
+📆 This Week
+</h3>
+
+
+{
+sortEvents(weekEvents)
+.slice(0,5)
+.map(event=>(
+
+<EventRow
+key={event.id}
+event={event}
+/>
 
 ))
 
 }
 
 
+</div>
+
+}
+
+
+
+
 
 {
-remaining > 0 && (
+laterEvents.length > 0 &&
 
-<p
+<div
 style={{
-marginTop:12,
-fontSize:14
+marginTop:20
 }}
 >
 
-+ {remaining} more events this week
+<h3>
+🔜 Coming Up
+</h3>
 
+
+{
+sortEvents(laterEvents)
+.slice(0,3)
+.map(event=>(
+
+<EventRow
+key={event.id}
+event={event}
+/>
+
+))
+
+}
+
+
+</div>
+
+}
+
+
+
+
+
+{
+events.length === 0 &&
+
+<p>
+No upcoming events 🎉
 </p>
-
-)
 
 }
 
