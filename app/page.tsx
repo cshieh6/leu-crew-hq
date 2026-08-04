@@ -14,9 +14,16 @@ import PetCard from "@/components/PetCard";
 import KidsCard from "@/components/KidsCard";
 import DiscussCard from "@/components/DiscussCard";
 import QuickAddCard from "@/components/QuickAddCard";
+import BottomNav from "@/components/mobile/BottomNav";
+import ShoppingScreen from "@/components/mobile/screens/ShoppingScreen";
+import TasksScreen from "@/components/mobile/screens/TasksScreen";
+import CalendarScreen from "@/components/mobile/CalendarScreen";
+import FamilyScreen from "@/components/mobile/FamilyScreen";
+import HomeScreen from "@/components/mobile/screens/HomeScreen";
 
 export default function Home() {
 
+  const [activeTab,setActiveTab] = useState("home");
 
   const [tasks,setTasks] =
     useState<any[]>([]);
@@ -461,16 +468,120 @@ async function toggleDiscussion(
 
 
 
-  const remainingShopping =
+
+const remainingShopping =
     shopping.filter(
       item =>
         !item.completed
     ).length;
 
+if (activeTab === "home") {
+  return (
+
+<HomeScreen
+
+tasks={tasks}
+shopping={shopping}
+family={family}
+events={events}
+pets={pets}
+discussions={discussions}
 
 
+newTask={newTask}
+setNewTask={setNewTask}
+newTaskDueDate={newTaskDueDate}
+setNewTaskDueDate={setNewTaskDueDate}
+addTask={addTask}
+deleteTask={deleteTask}
+toggleTask={toggleTask}
 
 
+newItem={newItem}
+setNewItem={setNewItem}
+newItemStore={newItemStore}
+setNewItemStore={setNewItemStore}
+addItem={addItem}
+deleteItem={deleteItem}
+toggleShoppingItem={toggleShoppingItem}
+
+
+newDiscussion={newDiscussion}
+setNewDiscussion={setNewDiscussion}
+newDiscussionCategory={newDiscussionCategory}
+setNewDiscussionCategory={setNewDiscussionCategory}
+newDiscussionPriority={newDiscussionPriority}
+setNewDiscussionPriority={setNewDiscussionPriority}
+addDiscussion={addDiscussion}
+deleteDiscussion={deleteDiscussion}
+toggleDiscussion={toggleDiscussion}
+
+
+activeTab={activeTab}
+setActiveTab={setActiveTab}
+
+/>
+
+);
+}
+
+if (activeTab === "shopping") {
+  return (
+    <ShoppingScreen
+      shopping={shopping}
+      newItem={newItem}
+      setNewItem={setNewItem}
+      newItemStore={newItemStore}
+      setNewItemStore={setNewItemStore}
+      addItem={addItem}
+      deleteItem={deleteItem}
+      toggleShoppingItem={toggleShoppingItem}
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+    />
+  );
+}
+   
+if (activeTab === "tasks") {
+  return (
+    <TasksScreen
+      tasks={tasks}
+      newTask={newTask}
+      setNewTask={setNewTask}
+      newTaskDueDate={newTaskDueDate}
+      setNewTaskDueDate={setNewTaskDueDate}
+      addTask={addTask}
+      deleteTask={deleteTask}
+      toggleTask={toggleTask}
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+    />
+  );
+}
+
+
+if (activeTab === "calendar") {
+  return (
+    <CalendarScreen
+      events={events}
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+    />
+  );
+}
+
+
+if (activeTab === "family") {
+  return (
+    <FamilyScreen
+      family={family}
+      events={events}
+      pets={pets}
+      activeTab={activeTab}
+      setActiveTab={setActiveTab}
+    />
+  );
+}
 
 
 return (
@@ -488,6 +599,7 @@ fontFamily:"system-ui"
 <Header />
 
 <QuickAddCard
+
 
 newTask={newTask}
 setNewTask={setNewTask}
@@ -706,6 +818,11 @@ events={
 
 
 </div>
+
+<BottomNav
+  activeTab={activeTab}
+  setActiveTab={setActiveTab}
+/>
 
 
 </main>
