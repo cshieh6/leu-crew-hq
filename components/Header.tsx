@@ -3,16 +3,52 @@
 import CalendarSync from "./CalendarSync";
 
 
-export default function Header() {
+function getGreeting(){
+
+  const hour = new Date().getHours();
+
+  if(hour < 12){
+    return "Good morning";
+  }
+
+  if(hour < 18){
+    return "Good afternoon";
+  }
+
+  return "Good evening";
+
+}
+
+
+
+function formatToday(){
+
+  return new Date().toLocaleDateString(
+    "en-US",
+    {
+      weekday:"long",
+      month:"long",
+      day:"numeric",
+      year:"numeric",
+    }
+  );
+
+}
+
+
+
+export default function Header(){
 
   return (
 
     <header
       style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 24
+        display:"flex",
+        justifyContent:"space-between",
+        alignItems:"center",
+        gap:20,
+        flexWrap:"wrap",
+        marginBottom:24
       }}
     >
 
@@ -20,8 +56,8 @@ export default function Header() {
 
         <h1
           style={{
-            margin: 0,
-            fontSize: 32
+            margin:0,
+            fontSize:32
           }}
         >
           🏡 Leu Crew HQ
@@ -29,13 +65,27 @@ export default function Header() {
 
 
         <p
+  style={{
+    marginTop:8,
+    marginBottom:4,
+    color:"#666",
+    fontSize:15
+  }}
+>
+  {getGreeting()} 👋
+</p>
+
+
+        <p
           style={{
-            marginTop: 6,
-            color: "#666"
+            margin:0,
+            color:"#888",
+            fontSize:14
           }}
         >
-          Your family command center
+          {formatToday()}
         </p>
+
 
       </div>
 
