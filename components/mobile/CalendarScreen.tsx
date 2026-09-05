@@ -2,48 +2,29 @@
 
 import CalendarCard from "@/components/CalendarCard";
 import BottomNav from "./BottomNav";
-import PageContainer from "../PageContainer";
-import Card from "../Card";
 
 export default function CalendarScreen({
   events,
   activeTab,
-  setActiveTab
-}:any){
+  setActiveTab,
+}: any) {
+  return (
+    <main
+      style={{
+        padding: 20,
+        maxWidth: 1200,
+        margin: "0 auto",
+        fontFamily: "system-ui",
+      }}
+    >
+      <h1>📅 Calendar</h1>
 
-return (
+      <CalendarCard events={events} />
 
-<main
-style={{
-padding:20,
-maxWidth:1200,
-margin:"0 auto",
-fontFamily:"system-ui"
-}}
->
-
-<h1>
-📅 Calendar
-</h1>
-
-
-<Card>
-
-<CalendarCard
-events={events}
-/>
-
-</Card>
-
-
-<BottomNav
-activeTab={activeTab}
-setActiveTab={setActiveTab}
-/>
-
-
-</main>
-
-);
-
+      <BottomNav
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
+    </main>
+  );
 }
