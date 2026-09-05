@@ -2,6 +2,8 @@
 
 import CalendarCard from "@/components/CalendarCard";
 import BottomNav from "./BottomNav";
+import PageContainer from "../PageContainer";
+import Card from "../Card";
 
 export default function CalendarScreen({
   events,
@@ -25,9 +27,13 @@ fontFamily:"system-ui"
 </h1>
 
 
+<Card>
+
 <CalendarCard
 events={events}
 />
+
+</Card>
 
 
 <BottomNav

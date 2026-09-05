@@ -1,53 +1,42 @@
 
 "use client";
 
-import ShoppingCard from "@/components/ShoppingCard";
+import DiscussCard from "@/components/DiscussCard";
 import BottomNav from "../BottomNav";
 import PageContainer from "../PageContainer";
 import Card from "../Card";
 import AppHeader from "../AppHeader";
 
-type Props = {
-  shopping: any[];
-  newItem: string;
-  setNewItem: (value: string) => void;
-  newItemStore: string;
-  setNewItemStore: (value: string) => void;
-  addItem: () => void;
-  deleteItem: (id: number) => void;
-  toggleShoppingItem: (id: number, completed: boolean) => void;
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
-};
-
-export default function ShoppingScreen({
-  shopping,
-  newItem,
-  setNewItem,
-  newItemStore,
-  setNewItemStore,
-  addItem,
-  deleteItem,
-  toggleShoppingItem,
+export default function DiscussionsScreen({
+  discussions,
+  newDiscussion,
+  setNewDiscussion,
+  newDiscussionCategory,
+  setNewDiscussionCategory,
+  newDiscussionPriority,
+  setNewDiscussionPriority,
+  addDiscussion,
+  deleteDiscussion,
+  toggleDiscussion,
   activeTab,
   setActiveTab,
-}: Props) {
-  const remainingItems = shopping.filter(
-    (item: any) => !item.completed
+}: any) {
+  const openDiscussions = discussions.filter(
+    (discussion: any) => !discussion.completed
   ).length;
 
-  const completedItems = shopping.filter(
-    (item: any) => item.completed
+  const resolvedDiscussions = discussions.filter(
+    (discussion: any) => discussion.completed
   ).length;
 
   return (
     <PageContainer>
       <AppHeader
-        title="🛒 Shopping"
-        subtitle="Keep the household stocked"
+        title="💬 Discussions"
+        subtitle="Things to talk about"
       />
 
-      {/* SHOPPING SUMMARY */}
+      {/* Discussion Summary */}
       <Card>
         <div
           style={{
@@ -65,7 +54,7 @@ export default function ShoppingScreen({
                 marginBottom: 5,
               }}
             >
-              Items to buy
+              Open discussions
             </div>
 
             <div
@@ -75,7 +64,7 @@ export default function ShoppingScreen({
                 lineHeight: 1,
               }}
             >
-              {remainingItems}
+              {openDiscussions}
             </div>
           </div>
 
@@ -84,66 +73,66 @@ export default function ShoppingScreen({
               textAlign: "right",
               color: "#777",
               fontSize: 14,
-              lineHeight: 1.5,
             }}
           >
             <div>
-              {completedItems} completed
+              {resolvedDiscussions} resolved
             </div>
 
             <div
               style={{
-                marginTop: 3,
+                marginTop: 4,
                 fontSize: 12,
                 color: "#999",
               }}
             >
-              {shopping.length} total
+              {discussions.length} total
             </div>
           </div>
         </div>
       </Card>
 
-      {/* SHOPPING LIST */}
+      {/* Discussion List */}
       <Card>
         <div
           style={{
-            marginBottom: 16,
+            marginBottom: 18,
           }}
         >
           <h3
             style={{
-              margin: 0,
-              fontSize: 18,
+              marginTop: 0,
+              marginBottom: 4,
             }}
           >
-            🧺 Shopping List
+            💭 Discussion List
           </h3>
 
           <div
             style={{
-              marginTop: 4,
-              color: "#777",
               fontSize: 13,
+              color: "#888",
             }}
           >
-            Add what the Leu Crew needs next.
+            Keep track of things the Leu Crew wants to talk through.
           </div>
         </div>
 
-        <ShoppingCard
-          shopping={shopping}
-          newItem={newItem}
-          setNewItem={setNewItem}
-          newItemStore={newItemStore}
-          setNewItemStore={setNewItemStore}
-          addItem={addItem}
-          deleteItem={deleteItem}
-          toggleShoppingItem={toggleShoppingItem}
+        <DiscussCard
+          discussions={discussions}
+          newDiscussion={newDiscussion}
+          setNewDiscussion={setNewDiscussion}
+          newDiscussionCategory={newDiscussionCategory}
+          setNewDiscussionCategory={setNewDiscussionCategory}
+          newDiscussionPriority={newDiscussionPriority}
+          setNewDiscussionPriority={setNewDiscussionPriority}
+          addDiscussion={addDiscussion}
+          deleteDiscussion={deleteDiscussion}
+          toggleDiscussion={toggleDiscussion}
         />
       </Card>
 
-      {/* Space above fixed navigation */}
+      {/* Bottom navigation spacing */}
       <div style={{ height: 90 }} />
 
       <BottomNav

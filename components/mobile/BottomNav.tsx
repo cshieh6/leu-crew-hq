@@ -5,12 +5,10 @@ type BottomNavProps = {
   setActiveTab:(tab:string)=>void;
 };
 
-
 export default function BottomNav({
   activeTab,
   setActiveTab
 }:BottomNavProps){
-
 
 const tabs = [
   {
@@ -49,18 +47,24 @@ position:"fixed",
 bottom:0,
 left:0,
 right:0,
-height:70,
+height:75,
 background:"white",
-borderTop:"1px solid #ddd",
+borderTop:"1px solid #eee",
+boxShadow:"0 -2px 10px rgba(0,0,0,.08)",
 display:"flex",
 justifyContent:"space-around",
 alignItems:"center",
+padding:"0 8px",
 zIndex:100
 }}
 >
 
 {
-tabs.map(tab=>(
+tabs.map(tab=>{
+
+const active = activeTab === tab.id;
+
+return (
 
 <button
 key={tab.id}
@@ -68,29 +72,55 @@ onClick={()=>setActiveTab(tab.id)}
 style={{
 background:"none",
 border:"none",
-fontSize:13,
 display:"flex",
 flexDirection:"column",
 alignItems:"center",
-gap:4,
-opacity:
-activeTab===tab.id ? 1 : .5
+justifyContent:"center",
+gap:3,
+fontSize:12,
+fontWeight:active ? 700 : 400,
+color:active ? "#000" : "#777",
+cursor:"pointer",
+flex:1,
+height:"100%"
 }}
 >
 
-<span
+<div
 style={{
-fontSize:24
+fontSize:24,
+transform:active ? "scale(1.1)" : "scale(1)",
+transition:"transform .15s"
 }}
 >
 {tab.icon}
-</span>
+</div>
 
+
+<div>
 {tab.label}
+</div>
+
+
+{
+active &&
+<div
+style={{
+width:5,
+height:5,
+borderRadius:"50%",
+background:"#000",
+marginTop:3
+}}
+/>
+}
+
 
 </button>
 
-))
+)
+
+})
 
 }
 
