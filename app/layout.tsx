@@ -34,7 +34,13 @@ sizes: "512x512",
 type: "image/png",
 },
 ],
-apple: "/apple-touch-icon.png",
+apple: [
+  {
+    url: "/apple-touch-icon.png",
+    sizes: "1254x1254",
+    type: "image/png",
+  },
+],
 },
 };
 
